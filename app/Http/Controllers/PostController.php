@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePostRequest;
+use App\Models\Post;
 use App\Services\PostService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PostController extends Controller {
@@ -15,30 +17,37 @@ class PostController extends Controller {
     }
 
     public function createPost(CreatePostRequest $request) {
-        try {
-            $validated = $request->validated();
+        $validated = $request->validated();
+        $caption = $validated["caption"];
 
-            $caption = $validated['caption'];
-            $result = $this->postService->createPost(caption: $caption);
-
-            if (isset($result['error'])) {
-                return response()->json($result, 500);
-            }
-
-            return response()->json([
-                'message' => 'Post created successfully',
-                'data' => $result
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Failed to create post',
-                'details' => $e->getMessage()
-            ], 500);
-        }
+        $post = $this->postService->createPost(userId: '0195b937-5c21-7329-9d86-e756299e6448', caption: $caption);
+        return $post;
     }
 
-    public function updatePost(Request $req, string $id) {
-        return $id;
+    public function updatePost(CreatePostRequest $req, string $id): Post | JsonResponse {
+        $validated = $req->validated();
+        $caption = $validated['caption'];
+
+        $post = $this->postService->updatePost(userId: '0195b937-5c21-7329-9d86-e756299e6448', id: $id, caption: $caption);
+
+        if ($post == null) {
+            return response()->json([
+                "error" => "Post Not found"
+            ], status: 404);
+        }
+
+        return $post;
+    }
+
+    public function deletePost(string $id) {
+        if ($this->postService->deletePost(userId: '0195b937-5c21-7329-9d86-e756299e6448', postId: $id)) {
+            return response()->json([
+                "message" => "Post Deleted"
+            ], status: 200);
+        } else {
+            return response()->json([
+                "error" => "Post not found"
+            ], status: 404);
+        }
     }
 }

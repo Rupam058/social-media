@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreatePostRequest extends FormRequest {
+class CreateFollowRequest extends FormRequest {
 
     /**
      * Get the validation rules that apply to the request.
@@ -13,8 +13,7 @@ class CreatePostRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            "caption" => "required|string|max:500",
-            "image" => "file|mimes:jpeg,png,jpg,gif,svg|max:2048"
+            "to_id" => "required|uuid",
         ];
     }
 }

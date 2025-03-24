@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getPosts']);
-    Route::post('/', [PostController::class, 'createPost'])->middleware(TestMiddleware::class);
+    Route::post('/', [PostController::class, 'createPost']);
     Route::put('/{id}', [PostController::class, 'updatePost']);
     Route::delete('/{id}', [PostController::class, 'deletePost']);
 });
@@ -21,6 +21,7 @@ Route::prefix('/likes')->group(function () {
 });
 
 Route::prefix('/comments')->group(function () {
+    Route::post('/', [CommentController::class, 'createComment']);
     Route::put('/{id}', [CommentController::class, 'updateComment']);
     Route::delete('/{id}', [CommentController::class, 'deleteComment']);
 });
