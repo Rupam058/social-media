@@ -12,7 +12,8 @@ return new class extends Migration {
         Schema::create('posts', function (Blueprint $table) {
             $table->uuid("id")->primary()->unique();
             $table->string("caption");
-            $table->foreignUuid("user_id")->constrained("users");
+            $table->string("image")->nullable();
+            $table->foreignUuid("user_id")->constrained("users")->onDelete("cascade");
             $table->timestamps();
         });
     }
