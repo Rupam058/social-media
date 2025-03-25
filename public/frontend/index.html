@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <style>
+        body {
+            background-color: #221a1a;
+            padding: 2rem;
+            color: white;
+        }
+    </style>
+    <body>
+        <h1>hello world</h1>
+        <p>lorem ipsum dolor sit amet</p>
+
+        <button onclick="create()">Create Post</button>
+
+        <script>
+            function getCookieValue(name) {
+                console.log("All cookies:", document.cookie);
+                const regex = new RegExp(`(^| )${name}=([^;]+)`);
+                const match = decodeURIComponent(document.cookie.match(regex));
+                if (match) {
+                    console.log("XSRF-TOKEN:", match[2]);
+                    return decodeURIComponent(match[2]);
+                }
+                console.log("No XSRF-TOKEN found");
+                return null;
+            }
+            function xsrfToken() {
+                const xsrfToken = document.cookie
+                    .split("; ")
+                    .find((row) => row.startsWith("XSRF-TOKEN="))
+                    ?.split("=")[1];
+                return xsrfToken;
+            }
+
+            async function create() {
+                try {
+                    const csrfResponse = await fetch(
+                        "https://social-media.test/sanctum/csrf-cookie",
+                        {
+                            method: "GET",
+                            credentials: "include",
+                            headers: {
+                                Accept: "application/json",
+                            },
+                        },
+                    );
+
+                    console.log("CSRF Response", csrfResponse);
+
+                    const getCooked = decodeURIComponent(xsrfToken());
+                    const getCook = getCookieValue("XSRF-TOKEN");
+
+                    const postResponse = await fetch(
+                        "https://social-media.test/api/posts",
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-XSRF-TOKEN": getCooked,
+                                Accept: "application/json",
+                            },
+                            body: JSON.stringify({
+                                caption: "testing",
+                            }),
+                        },
+                    );
+
+                    console.log("Post Response", await postResponse.json());
+                } catch (error) {
+                    console.log("error:", error);
+                }
+            }
+        </script>
+    </body>
+</html>

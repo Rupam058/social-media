@@ -1,57 +1,43 @@
 <?php
 
-use App\Models\Comment;
-use App\Models\Post;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/posts', function () {
-    $posts = Post::with(['comments', 'user'])->get();
-    return response()->json($posts);
+Route::prefix('/auth')->group(function () {
+    Route::post('/login', [UserController::class, 'login']);
+    Route::post('/register', [UserController::class, 'register']);
 });
 
-Route::get('/createUser', function () {
-    $user = User::create([
-        'name' => 'Cookie Monster',
-        'email' => 'cool@gmail.com',
-        'password' => Hash::make('securedPassword')
-    ]);
+Route::prefix('/api')->group(function () {
+    Route::prefix('/posts')->group(function () {
+        Route::get('/', [PostController::class, 'getPosts']);
+        Route::post('/', [PostController::class, 'createPost']);
+        Route::put('/{id}', [PostController::class, 'updatePost']);
+        Route::delete('/{id}', [PostController::class, 'deletePost']);
+    });
 
-    return response()->json($user);
-});
+    Route::prefix('/likes')->group(function () {
+        Route::post('/', [LikeController::class, 'createLike']);
+        Route::delete('/{id}', [LikeController::class, 'deleteLike']);
+    });
 
-Route::get('/createPost', function () {
-    $post = new Post([
-        "caption" => "I Love cats"
-    ]);
+    Route::prefix('/comments')->group(function () {
+        Route::post('/', [CommentController::class, 'createComment']);
+        Route::put('/{id}', [CommentController::class, 'updateComment']);
+        Route::delete('/{id}', [CommentController::class, 'deleteComment']);
+    });
 
-    $post->user_id = "0195b937-5c21-7329-9d86-e756299e6448";
-    $post->save();
-
-    return response("Created Post");
-});
-
-Route::get('/updatePost/{id}', function (Request $req, string $id) {
-    $caption = $req->query('caption');
-    $post = Post::find($id);
-    $post->caption = $caption;
-    $post->save();
-
-    return response()->json($post);
-});
-
-Route::get('/createComment', function () {
-    $comment = Comment::create([
-        "post_id" => "0195b938-d981-72d3-9eec-bf7f529aa865",
-        "user_id" => "0195b937-5c21-7329-9d86-e756299e6448",
-        "content" => "I Agree, cats are the best!"
-    ]);
-
-    return response()->json($comment);
+    Route::prefix('/follows')->group(function () {
+        Route::get('/', [FollowController::class, 'getFollows']);
+        Route::post('/', [FollowController::class, 'createFollow']);
+        Route::delete('/{id}', [FollowController::class, 'deleteFollow']);
+    });
 });

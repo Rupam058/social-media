@@ -12,8 +12,8 @@ class PostController extends Controller {
     public function __construct(protected PostService $postService) {
     }
 
-    public function testRoute(Request $request) {
-        return "THis still Works!";
+    public function getPosts() {
+        return $this->postService->getPosts();
     }
 
     public function createPost(CreatePostRequest $request) {
