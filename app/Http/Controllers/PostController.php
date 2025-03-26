@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller {
     public function __construct(protected PostService $postService) {
@@ -20,7 +21,7 @@ class PostController extends Controller {
         $validated = $request->validated();
         $caption = $validated["caption"];
 
-        $post = $this->postService->createPost(userId: '0195b937-5c21-7329-9d86-e756299e6448', caption: $caption);
+        $post = $this->postService->createPost(userId: Auth::id(), caption: $caption);
         return $post;
     }
 
@@ -28,7 +29,7 @@ class PostController extends Controller {
         $validated = $req->validated();
         $caption = $validated['caption'];
 
-        $post = $this->postService->updatePost(userId: '0195b937-5c21-7329-9d86-e756299e6448', id: $id, caption: $caption);
+        $post = $this->postService->updatePost(userId: Auth::id(), id: $id, caption: $caption);
 
         if ($post == null) {
             return response()->json([
@@ -40,7 +41,7 @@ class PostController extends Controller {
     }
 
     public function deletePost(string $id) {
-        if ($this->postService->deletePost(userId: '0195b937-5c21-7329-9d86-e756299e6448', postId: $id)) {
+        if ($this->postService->deletePost(userId: Auth::id(), postId: $id)) {
             return response()->json([
                 "message" => "Post Deleted"
             ], status: 200);

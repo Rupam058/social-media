@@ -17,19 +17,11 @@
         <p>lorem ipsum dolor sit amet</p>
 
         <button onclick="create()">Create Post</button>
+        <button onclick="register()">Register</button>
+        <button onclick="login()">Login</button>
+        <button onclick="logout()">Logout</button>
 
         <script>
-            function getCookieValue(name) {
-                console.log("All cookies:", document.cookie);
-                const regex = new RegExp(`(^| )${name}=([^;]+)`);
-                const match = decodeURIComponent(document.cookie.match(regex));
-                if (match) {
-                    console.log("XSRF-TOKEN:", match[2]);
-                    return decodeURIComponent(match[2]);
-                }
-                console.log("No XSRF-TOKEN found");
-                return null;
-            }
             function xsrfToken() {
                 const xsrfToken = document.cookie
                     .split("; ")
@@ -37,8 +29,7 @@
                     ?.split("=")[1];
                 return xsrfToken;
             }
-
-            async function create() {
+            async function getCsrfResponse() {
                 try {
                     const csrfResponse = await fetch(
                         "https://social-media.test/sanctum/csrf-cookie",
@@ -52,9 +43,15 @@
                     );
 
                     console.log("CSRF Response", csrfResponse);
+                } catch (error) {
+                    console.log("error:", error);
+                }
+            }
 
+            async function create() {
+                try {
+                    await getCsrfResponse();
                     const getCooked = decodeURIComponent(xsrfToken());
-                    const getCook = getCookieValue("XSRF-TOKEN");
 
                     const postResponse = await fetch(
                         "https://social-media.test/api/posts",
@@ -73,6 +70,90 @@
                     );
 
                     console.log("Post Response", await postResponse.json());
+                } catch (error) {
+                    console.log("error:", error);
+                }
+            }
+
+            async function register() {
+                try {
+                    await getCsrfResponse();
+                    const getCooked = decodeURIComponent(xsrfToken());
+
+                    const registerResponse = await fetch(
+                        "https://social-media.test/auth/register",
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-XSRF-TOKEN": getCooked,
+                                Accept: "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: "test2345@gmail.com",
+                                password: "StrongPassword",
+                            }),
+                        },
+                    );
+
+                    console.log("Register", await registerResponse.json());
+                } catch (error) {
+                    console.log("error:", error);
+                }
+            }
+
+            async function login() {
+                try {
+                    await getCsrfResponse();
+                    const getCooked = decodeURIComponent(xsrfToken());
+
+                    const registerResponse = await fetch(
+                        "https://social-media.test/auth/login",
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-XSRF-TOKEN": getCooked,
+                                Accept: "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: "test234@gmail.com",
+                                password: "StrongPassword",
+                            }),
+                        },
+                    );
+
+                    console.log("Register", await registerResponse.json());
+                } catch (error) {
+                    console.log("error:", error);
+                }
+            }
+
+            async function logout() {
+                try {
+                    await getCsrfResponse();
+                    const getCooked = decodeURIComponent(xsrfToken());
+
+                    const registerResponse = await fetch(
+                        "https://social-media.test/auth/logout",
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-XSRF-TOKEN": getCooked,
+                                Accept: "application/json",
+                            },
+                            body: JSON.stringify({
+                                email: "test234@gmail.com",
+                                password: "StrongPassword",
+                            }),
+                        },
+                    );
+
+                    console.log("Register", await registerResponse.json());
                 } catch (error) {
                     console.log("error:", error);
                 }

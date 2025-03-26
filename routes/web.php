@@ -12,14 +12,16 @@ Route::get('/', function () {
 });
 
 Route::prefix('/auth')->group(function () {
-    Route::post('/login', [UserController::class, 'login']);
     Route::post('/register', [UserController::class, 'register']);
+    Route::post('/login', [UserController::class, 'login']);
+    Route::post('/logout', [UserController::class, 'logout']);
 });
 
 Route::prefix('/api')->group(function () {
     Route::prefix('/posts')->group(function () {
         Route::get('/', [PostController::class, 'getPosts']);
-        Route::post('/', [PostController::class, 'createPost']);
+        Route::post('/', [PostController::class, 'createPost'])
+            ->middleware('auth:sanctum');
         Route::put('/{id}', [PostController::class, 'updatePost']);
         Route::delete('/{id}', [PostController::class, 'deletePost']);
     });
