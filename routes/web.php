@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -15,6 +16,11 @@ Route::prefix('/auth')->group(function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/logout', [UserController::class, 'logout']);
+
+    // First Redirect the user to google for authentication
+    Route::get("/redirect/google", [GoogleAuthController::class, 'redirect']);
+    // Once done, host them...
+    Route::get("/callback/google", [GoogleAuthController::class, 'callback']);
 });
 
 Route::prefix('/api')->group(function () {

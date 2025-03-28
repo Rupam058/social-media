@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://social-media.test'], // Change it if you want to save your website from hackers
+    'allowed_origins' => ['https://social-media.test', 'http://localhost:8000'], // Change it if you want to save your website from hackers
 
     'allowed_origins_patterns' => [],
 

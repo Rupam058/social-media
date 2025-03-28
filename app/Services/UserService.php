@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class UserService {
     public function register(string $email, string $password) {
         $normalizedEmail = strtolower($email);
-        $user = User::query()->where("email", $normalizedEmail)->first();
+        $user = $this->getUserByEmail($email);
 
         if ($user != null)
             return false;
@@ -17,6 +17,7 @@ class UserService {
         User::create([
             "email" => $normalizedEmail,
             "name" => 'Cooler User',
+            "auth_type" => "password",
             "password" => Hash::make($password),
             "description" => "not coolest user ever"
         ]);
@@ -24,12 +25,17 @@ class UserService {
         return true;
     }
 
+    public function getUserByEmail(string $email) {
+        $normalizedEmail = strtolower($email);
+        return User::query()->where("email", $normalizedEmail)->first();
+    }
+
     public function login(string $email, string $password) {
         try {
             $normalizedEmail = strtolower($email);
 
             // Check if user exists
-            $user = User::where('email', $normalizedEmail)->first();
+            $user = $this->getUserByEmail($email);
 
             if (!$user) {
                 return [
@@ -41,6 +47,7 @@ class UserService {
             // Attempt authentication
             if (Auth::attempt([
                 "email" => $normalizedEmail,
+                "auth_type" => "password",
                 "password" => $password
             ])) {
                 return [
@@ -61,5 +68,32 @@ class UserService {
                 'error' => $e->getMessage()
             ];
         }
+    }
+
+    public function onThirdPartyCallback(string $provider, string $email, string $avatar) {
+        $normalizedEmail = strtolower($email);
+        $user = $this->getUserByEmail($normalizedEmail);
+
+        // Don't let existing users login/register with a different provider.
+        if ($user != null && $user->auth_type != $provider) {
+            return false;
+        }
+
+        if ($user == null) {
+            $user = $this->registerThirdParty($provider, $email, $avatar);
+        }
+        Auth::login($user);
+    }
+
+    public function registerThirdParty(string $provider, string $email, string $avatar): User {
+        $normalizedEmail = strtolower($email);
+
+        return User::create([
+            "email" => $normalizedEmail,
+            "name" => $email,
+            "auth_type" => $provider,
+            "password" => "",
+            "description" => "",
+        ]);
     }
 }
