@@ -21,7 +21,16 @@ class PostController extends Controller {
         $validated = $request->validated();
         $caption = $validated["caption"];
 
-        $post = $this->postService->createPost(userId: Auth::id(), caption: $caption);
+        $file = $request->file("image");
+        if ($file != null && $file->isValid()) {
+            if ($file->store("uploads", "public")) {
+                $image = $file->hashName();
+            }
+        }
+
+        var_dump($image);
+
+        $post = $this->postService->createPost(userId: Auth::id(), caption: $caption, image: $image);
         return $post;
     }
 

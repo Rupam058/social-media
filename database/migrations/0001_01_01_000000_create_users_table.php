@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->uuid("id")->primary()->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('description')->nullable();
+            // $table->string('description')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

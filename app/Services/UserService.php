@@ -25,9 +25,14 @@ class UserService {
         return true;
     }
 
-    public function getUserByEmail(string $email) {
+    public function getUserByEmail(string $email): User | null {
         $normalizedEmail = strtolower($email);
         return User::query()->where("email", $normalizedEmail)->first();
+    }
+    public function getUserById(string $id): User | null {
+        return User::query()
+            ->where("id", $id)
+            ->first();
     }
 
     public function login(string $email, string $password) {
@@ -68,6 +73,17 @@ class UserService {
                 'error' => $e->getMessage()
             ];
         }
+    }
+
+    public function setUserAvatar(string $user, string $avatar) {
+        $user = $this->getUserById($user);
+        if ($user == null)
+            return false;
+
+        $user->avatar = $avatar;
+        $user->save();
+
+        return true;
     }
 
     public function onThirdPartyCallback(string $provider, string $email, string $avatar) {

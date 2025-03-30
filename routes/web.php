@@ -7,9 +7,16 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get("/cat", function () {
+    return Storage::download("public/uploads/BBVw8qr71mJsjXDVZ9oFE444oZHetop2MpX7Dqgd.png", null, [
+        'Content-Disposition' => 'inline',
+    ]);
 });
 
 Route::prefix('/auth')->group(function () {
@@ -47,5 +54,9 @@ Route::prefix('/api')->group(function () {
         Route::get('/', [FollowController::class, 'getFollows']);
         Route::post('/', [FollowController::class, 'createFollow']);
         Route::delete('/{id}', [FollowController::class, 'deleteFollow']);
+    });
+
+    Route::prefix('/user')->middleware("auth:sanctum")->group(function () {
+        Route::post('/avatar', [UserController::class, 'setAvatar']);
     });
 });

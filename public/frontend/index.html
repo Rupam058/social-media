@@ -16,16 +16,19 @@
         }
     </style>
     <body>
-        <h1>hello world</h1>
-        <p>lorem ipsum dolor sit amet</p>
-
+        <input type="file" id="postImage" accept="image/png, image/jpg" />
         <button onclick="create()">Create Post</button>
+        <button onclick="setAvatar()">Set Avatar</button>
+        <br /><br />
+
         <button onclick="register()">Register</button>
         <button onclick="login()">Login</button>
         <button onclick="logout()">Logout</button>
         <a href="http://localhost:8000/auth/redirect/google"
             >Login with Google</a
         >
+
+        <div id="posts"></div>
 
         <script>
             // const API_BASE_URL = "https://social-media.test";
@@ -57,8 +60,29 @@
                 }
             }
 
+            window.addEventListener("load", renderPosts);
+
+            function getFile() {
+                const postImageElement = document.getElementById("postImage");
+                if (postImageElement == null) return null;
+
+                if (postImageElement.files.length != 1) return null;
+
+                return postImageElement.files[0];
+            }
+
             async function create() {
                 try {
+                    let image = getFile();
+                    if (image == null) {
+                        console.log("No image selected");
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append("caption", "testing image");
+                    formData.append("image", image);
+
                     await getCsrfResponse();
                     const getCooked = decodeURIComponent(xsrfToken());
 
@@ -68,19 +92,63 @@
                             method: "POST",
                             credentials: "include",
                             headers: {
-                                "Content-Type": "application/json",
                                 "X-XSRF-TOKEN": getCooked,
                                 Accept: "application/json",
                             },
-                            body: JSON.stringify({
-                                caption: "testing",
-                            }),
+                            body: formData,
                         },
                     );
 
                     console.log("Post Response", await postResponse.json());
                 } catch (error) {
                     console.log("error:", error);
+                }
+            }
+
+            async function setAvatar() {
+                try {
+                    let image = getFile();
+                    if (image == null) return;
+
+                    const formData = new FormData();
+                    formData.append("image", image);
+
+                    await getCsrfResponse();
+                    const getCooked = decodeURIComponent(xsrfToken());
+
+                    const avatarResponse = await fetch(
+                        `${API_BASE_URL}/api/user/avatar`,
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            body: formData,
+                            headers: {
+                                Accept: "application/json",
+                                "X-XSRF-TOKEN": getCooked,
+                            },
+                        },
+                    );
+                    console.log("Avatar Response", await avatarResponse.json());
+                } catch (error) {
+                    console.log("error in setting Avatar:", error);
+                }
+            }
+
+            async function renderPosts() {
+                await getCsrfResponse();
+
+                const registerResponse = await fetch(
+                    `${API_BASE_URL}/api/posts`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    },
+                );
+                const posts = await registerResponse.json();
+
+                for (let post of posts) {
+                    document.getElementById("posts").innerHTML +=
+                        `<h3>${post.caption}</h3><img style="width: 600px" src="${API_BASE_URL}/storage/uploads/${post.image}"><br>`;
                 }
             }
 

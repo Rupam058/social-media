@@ -9,10 +9,11 @@ class PostService {
         return Post::all();
     }
 
-    public function createPost(string $userId, string $caption): Post {
+    public function createPost(string $userId, string $caption, string $image): Post {
         return Post::create([
             "caption" => $caption,
-            "user_id" => $userId
+            "user_id" => $userId,
+            "image" => $image
         ]);
     }
 

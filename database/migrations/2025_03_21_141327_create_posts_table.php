@@ -12,7 +12,7 @@ return new class extends Migration {
         Schema::create('posts', function (Blueprint $table) {
             $table->uuid("id")->primary()->unique();
             $table->string("caption");
-            $table->string("image")->nullable();
+            // $table->string("image")->nullable();
             $table->foreignUuid("user_id")->constrained("users")->onDelete("cascade");
             $table->timestamps();
         });

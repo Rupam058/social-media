@@ -22,6 +22,28 @@ class UserController extends Controller {
         return response()->json(["message" => "User created"], status: 201);
     }
 
+    public function setAvatar(Request $req) {
+        $req->validate([
+            "image" => "file|mimes:jpeg,png,jpg,gif,svg|max:2048"
+        ]);
+
+        $image = $req->file("image");
+        if (!$image->isValid()) {
+            return;
+        }
+
+        if (!$image->store("avatars", "public")) {
+            return;
+        }
+
+        $hash = $image->hashName();
+        if ($this->userService->setUserAvatar(user: Auth::id(), avatar: $hash)) {
+            return response()->json(["message" => "Avatar Set"], status: 201);
+        };
+
+        return response()->json(["error" => "error occured"]);
+    }
+
     public function login(Request $req) {
         $validated = $req->validate([
             "email" => "required|email",
