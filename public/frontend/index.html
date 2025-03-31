@@ -14,6 +14,16 @@
         a {
             color: white;
         }
+        .post {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .post img {
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+        }
     </style>
     <body>
         <input type="file" id="postImage" accept="image/png, image/jpg" />
@@ -27,6 +37,9 @@
         <a href="http://localhost:8000/auth/redirect/google"
             >Login with Google</a
         >
+        <br /><br />
+
+        <div id="pagination"></div>
 
         <div id="posts"></div>
 
@@ -60,7 +73,7 @@
                 }
             }
 
-            window.addEventListener("load", renderPosts);
+            window.addEventListener("load", () => renderPosts(1));
 
             function getFile() {
                 const postImageElement = document.getElementById("postImage");
@@ -134,11 +147,30 @@
                 }
             }
 
-            async function renderPosts() {
+            function createButton(page) {
+                let btn = document.createElement("button");
+                btn.innerText = page.toString();
+
+                if (page == currentPage) {
+                    btn.style.backgroundColor = "green";
+                    btn.style.color = "white";
+                }
+
+                btn.addEventListener("click", () => {
+                    renderPosts(page);
+                });
+
+                return btn;
+            }
+
+            let currentPage = 1;
+            let lastPage = 0;
+
+            async function renderPosts(page) {
                 await getCsrfResponse();
 
                 const registerResponse = await fetch(
-                    `${API_BASE_URL}/api/posts`,
+                    `${API_BASE_URL}/api/posts?page=${page}`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -146,9 +178,34 @@
                 );
                 const posts = await registerResponse.json();
 
-                for (let post of posts) {
-                    document.getElementById("posts").innerHTML +=
-                        `<h3>${post.caption}</h3><img style="width: 600px" src="${API_BASE_URL}/storage/uploads/${post.image}"><br>`;
+                // Create array of HTML strings
+                const postsHTML = posts.data.map((post) => {
+                    let html = `<div class="post">
+                        <h3>${post.caption}</h3>`;
+
+                    if (post.image != null) {
+                        html += `<img src="${API_BASE_URL}/storage/uploads/${post.image}" alt="${post.caption}">`;
+                    }
+
+                    html += `</div>`;
+                    return html;
+                });
+
+                // Set innerHTML once with all posts
+                document.getElementById("posts").innerHTML = postsHTML.join("");
+
+                currentPage = posts.current_page;
+
+                let pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+
+                if (currentPage > 2) pagination.appendChild(createButton(1));
+
+                if (currentPage != 1)
+                    pagination.appendChild(createButton(currentPage - 1));
+
+                for (let i = currentPage; i < posts.last_page + 1; i++) {
+                    pagination.appendChild(createButton(i));
                 }
             }
 
@@ -223,14 +280,10 @@
                                 "X-XSRF-TOKEN": getCooked,
                                 Accept: "application/json",
                             },
-                            body: JSON.stringify({
-                                email: "test234@gmail.com",
-                                password: "StrongPassword",
-                            }),
                         },
                     );
 
-                    console.log("Register", await registerResponse.json());
+                    console.log("Logout", await registerResponse.json());
                 } catch (error) {
                     console.log("error:", error);
                 }

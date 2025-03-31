@@ -6,7 +6,7 @@ use App\Models\Post;
 
 class PostService {
     public function getPosts() {
-        return Post::all();
+        return Post::paginate(5);
     }
 
     public function createPost(string $userId, string $caption, string $image): Post {
