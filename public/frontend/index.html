@@ -73,7 +73,11 @@
                 }
             }
 
-            window.addEventListener("load", () => renderPosts(1));
+            // Initial load of posts
+            document.addEventListener("DOMContentLoaded", async () => {
+                await renderPosts(currentPage);
+                checkContentHeight();
+            });
 
             function getFile() {
                 const postImageElement = document.getElementById("postImage");
@@ -164,7 +168,44 @@
             }
 
             let currentPage = 1;
-            let lastPage = 0;
+            let lastPage = 1;
+            let fetching = false;
+
+            document.addEventListener("scroll", async () => {
+                if (fetching) return;
+
+                let currentScroll = window.scrollY;
+                let maxScrollHeight =
+                    document.documentElement.scrollHeight - window.innerHeight;
+
+                if (currentScroll / maxScrollHeight > 0.9) {
+                    fetching = true;
+                    currentPage++;
+
+                    // Only fetch if there are more pages
+                    if (currentPage <= lastPage) {
+                        await renderPosts(currentPage);
+                    }
+
+                    fetching = false;
+                }
+            });
+
+            // Check if content is tall enough to scroll
+            async function checkContentHeight() {
+                // If content is shorter than viewport and we have more pages
+                while (
+                    document.documentElement.scrollHeight <=
+                        window.innerHeight &&
+                    currentPage < lastPage &&
+                    !fetching
+                ) {
+                    fetching = true;
+                    currentPage++;
+                    await renderPosts(currentPage);
+                    fetching = false;
+                }
+            }
 
             async function renderPosts(page) {
                 await getCsrfResponse();
@@ -192,10 +233,16 @@
                 });
 
                 // Set innerHTML once with all posts
-                document.getElementById("posts").innerHTML = postsHTML.join("");
+                const postsContainer = document.getElementById("posts");
+
+                postsContainer.innerHTML += postsHTML.join("");
 
                 currentPage = posts.current_page;
+                lastPage = posts.last_page;
+            }
 
+            // We will no longer call this function.
+            function renderPagination() {
                 let pagination = document.getElementById("pagination");
                 pagination.innerHTML = "";
 
