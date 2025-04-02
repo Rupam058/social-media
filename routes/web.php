@@ -10,13 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get("/cat", function () {
-    return Storage::download("public/uploads/BBVw8qr71mJsjXDVZ9oFE444oZHetop2MpX7Dqgd.png", null, [
-        'Content-Disposition' => 'inline',
-    ]);
+    return view('index');
 });
 
 Route::prefix('/auth')->group(function () {
