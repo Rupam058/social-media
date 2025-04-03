@@ -9,7 +9,7 @@ class PostService {
         return Post::paginate(25);
     }
 
-    public function createPost(string $userId, string $caption, string $image): Post {
+    public function createPost(string $userId, string $caption, string | null $image): Post {
         return Post::create([
             "caption" => $caption,
             "user_id" => $userId,

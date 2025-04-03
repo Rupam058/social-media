@@ -20,6 +20,7 @@ class PostController extends Controller {
     public function createPost(CreatePostRequest $request) {
         $validated = $request->validated();
         $caption = $validated["caption"];
+        $image = null;
 
         $file = $request->file("image");
         if ($file != null && $file->isValid()) {
@@ -27,8 +28,6 @@ class PostController extends Controller {
                 $image = $file->hashName();
             }
         }
-
-        var_dump($image);
 
         $post = $this->postService->createPost(userId: Auth::id(), caption: $caption, image: $image);
         return $post;

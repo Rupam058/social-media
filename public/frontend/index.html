@@ -93,12 +93,15 @@
                     let image = getFile();
                     if (image == null) {
                         console.log("No image selected");
-                        return;
+                        // return;
                     }
 
                     const formData = new FormData();
-                    formData.append("caption", "testing image");
-                    formData.append("image", image);
+                    formData.append(
+                        "caption",
+                        "whole new test to ensure you can post without image",
+                    );
+                    if (image != null) formData.append("image", image);
 
                     await getCsrfResponse();
                     const getCooked = decodeURIComponent(xsrfToken());

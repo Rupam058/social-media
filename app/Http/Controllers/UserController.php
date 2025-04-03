@@ -73,4 +73,16 @@ class UserController extends Controller {
             ], 500);
         }
     }
+
+    public function getUserDetails() {
+        $user = Auth::user();
+
+        if ($user == null) {
+            return response('Unauthorized', status: 401);
+        }
+
+        return response()->json([
+            "email" => $user->email,
+        ]);
+    }
 }

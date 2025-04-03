@@ -17,6 +17,7 @@ Route::prefix('/auth')->group(function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/logout', [UserController::class, 'logout']);
+    Route::get('/user', [UserController::class, 'getUserDetails']);
 
     // First Redirect the user to google for authentication
     Route::get("/redirect/google", [GoogleAuthController::class, 'redirect']);
