@@ -3,6 +3,7 @@ import { postService } from "../bootstarp";
 import { Post } from "../model/post";
 import { authContext } from "../context/auth";
 import { APP_BASE_URL } from "../bootstarp";
+import PostCard from "../components/PostCard";
 
 function Posts() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -10,7 +11,19 @@ function Posts() {
 
     useEffect(() => {
         load();
+
+        // Adding Event Listener for scroll
+        document.addEventListener("wheel", onScroll);
+
+        // Cleanup function to remove the event listener
+        return () => {
+            document.removeEventListener("wheel", onScroll);
+        };
     }, []);
+
+    function onScroll() {
+        
+    }
 
     async function load() {
         setPosts((await postService.getPosts()).data);
@@ -29,17 +42,11 @@ function Posts() {
                     </button>
                 ) : null}
 
-                {posts.map((p) => (
-                    <div key={p.id}>
-                        <h2>{p.caption}</h2>
-                        {p.image != null ? (
-                            <img
-                                className="w-96"
-                                src={`${APP_BASE_URL}/storage/uploads/${p.image}`}
-                            ></img>
-                        ) : null}
-                    </div>
-                ))}
+                <div className="flex flex-col gap-2 mt-2 pb-4">
+                    {posts.map((p) => (
+                        <PostCard key={p.id} post={p}></PostCard>
+                    ))}
+                </div>
             </div>
         </>
     );
