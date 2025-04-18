@@ -6,7 +6,7 @@ use App\Models\Post;
 
 class PostService {
     public function getPosts() {
-        return Post::paginate(25);
+        return Post::orderBy('created_at', 'desc')->paginate(5);
     }
 
     public function createPost(string $userId, string $caption, string | null $image): Post {
