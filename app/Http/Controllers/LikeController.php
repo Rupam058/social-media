@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateLikeRequest;
 use App\Services\LikeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller {
     public function __construct(protected LikeService $likeService) {
@@ -12,7 +13,7 @@ class LikeController extends Controller {
 
     public function createLike(CreateLikeRequest $req) {
         $validated = $req->validated();
-        $like = $this->likeService->createLike(userId: '0195b937-5c21-7329-9d86-e756299e6448', postId: $validated['post_id']);
+        $like = $this->likeService->createLike(userId: Auth::id(), postId: $validated['post_id']);
 
         if ($like == null) {
             return response()->json([
@@ -24,7 +25,7 @@ class LikeController extends Controller {
     }
 
     public function deleteLike(string $id) {
-        if ($this->likeService->deleteLike(userId: '0195b937-5c21-7329-9d86-e756299e6448', likeId: $id)) {
+        if ($this->likeService->deleteLike(userId: Auth::id(), likeId: $id)) {
             return response()->json([
                 "message" => "Like Deleted"
             ], status: 200);

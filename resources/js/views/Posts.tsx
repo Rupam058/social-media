@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { postService } from "../bootstarp";
-import { Post } from "../model/post";
+import { Post, PostResponse } from "../model/post";
 import { authContext } from "../context/auth";
 import { APP_BASE_URL } from "../bootstarp";
 import PostCard from "../components/PostCard";
 import CreatePost from "../components/CreatePost";
 
 function Posts() {
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [posts, setPosts] = useState<PostResponse[]>([]);
     const auth = useContext(authContext);
 
     let currentPage = 1;
@@ -53,7 +53,7 @@ function Posts() {
         setPosts((p) => [...p, ...response.data]);
     }
 
-    function onPostCreated(post: Post) {
+    function onPostCreated(post: PostResponse) {
         setPosts([post, ...posts]);
     }
 
@@ -66,7 +66,13 @@ function Posts() {
 
                 <div className="flex flex-col gap-2 mt-2 pb-4">
                     {posts.map((p) => (
-                        <PostCard key={p.id} post={p}></PostCard>
+                        <PostCard
+                            key={p.post.id}
+                            post={p.post}
+                            liked={p.liked ? p.liked.toString() : null}
+                            likes={p.likes}
+                            commentCount={p.comments}
+                        ></PostCard>
                     ))}
                 </div>
             </div>

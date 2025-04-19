@@ -3,3 +3,10 @@ export interface Post {
     caption: string;
     image: string | null;
 }
+
+export interface PostResponse {
+    post: Post;
+    likes: number;
+    comments: number;
+    liked: String | null;
+}

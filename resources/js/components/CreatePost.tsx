@@ -1,5 +1,5 @@
 import Avatar from "./Avatar";
-import { Post } from "../model/post";
+import { Post, PostResponse } from "../model/post";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faImage,
@@ -13,7 +13,7 @@ import { postService } from "../bootstarp";
 function CreatePost({
     onPostCreated,
 }: {
-    onPostCreated: (post: Post) => void;
+    onPostCreated: (post: PostResponse) => void;
 }) {
     const [imageUploadModal, setImageUploadModal] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);

@@ -1,13 +1,31 @@
 import { useContext } from "react";
-import { APP_BASE_URL } from "../bootstarp";
+import { APP_BASE_URL, likeService } from "../bootstarp";
 import { Post } from "../model/post";
 import Avatar from "./Avatar";
 import { authContext } from "../context/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({
+    post,
+    likes,
+    liked,
+    commentCount,
+}: {
+    post: Post;
+    likes: number;
+    liked: string | null;
+    commentCount: number;
+}) {
     const auth = useContext(authContext);
+
+    async function like() {
+        if (liked == null) {
+            await likeService.likePost(post.id);
+        } else {
+            await likeService.unlikePost(liked);
+        }
+    }
 
     return (
         <div className="bg-white p-2 border rounded-md ">
@@ -37,12 +55,15 @@ function PostCard({ post }: { post: Post }) {
                             />
                             <span className="text-sm">Comment</span>
                         </button>
-                        <button className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100">
+                        <button
+                            onClick={like}
+                            className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100"
+                        >
                             <FontAwesomeIcon
                                 icon={faThumbsUp}
                                 className="text-blue-400"
                             />
-                            <span className="text-sm">Comment</span>
+                            <span className="text-sm">Like({likes})</span>
                         </button>
                     </div>
                 </>

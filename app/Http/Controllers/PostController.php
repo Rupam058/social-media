@@ -14,7 +14,7 @@ class PostController extends Controller {
     }
 
     public function getPosts() {
-        return $this->postService->getPosts();
+        return response()->json($this->postService->getPosts(userId: Auth::id()));
     }
 
     public function createPost(CreatePostRequest $request) {
@@ -30,7 +30,7 @@ class PostController extends Controller {
         }
 
         $post = $this->postService->createPost(userId: Auth::id(), caption: $caption, image: $image);
-        return $post;
+        return response()->json($post, status: 201);
     }
 
     public function updatePost(CreatePostRequest $req, string $id): Post | JsonResponse {
