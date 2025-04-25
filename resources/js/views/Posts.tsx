@@ -5,6 +5,7 @@ import { authContext } from "../context/auth";
 import { APP_BASE_URL } from "../bootstarp";
 import PostCard from "../components/PostCard";
 import CreatePost from "../components/CreatePost";
+import { Like } from "../model/like";
 
 function Posts() {
     const [posts, setPosts] = useState<PostResponse[]>([]);
@@ -57,6 +58,25 @@ function Posts() {
         setPosts([post, ...posts]);
     }
 
+    function onPostLike(p: PostResponse, l: Like) {
+        updatePost(p.post, { liked: l.id, likes: p.likes + 1 });
+    }
+    function onPostUnlike(p: PostResponse) {
+        updatePost(p.post, { liked: null, likes: p.likes - 1 });
+    }
+
+    function updatePost(p: Post, data: object) {
+        setPosts(
+            posts.map((v) => {
+                if (v.post.id == p.id) {
+                    return { ...v, ...data };
+                } else {
+                    return v;
+                }
+            }),
+        );
+    }
+
     return (
         <>
             <div className="main-center">
@@ -72,6 +92,8 @@ function Posts() {
                             liked={p.liked ? p.liked.toString() : null}
                             likes={p.likes}
                             commentCount={p.comments}
+                            onLike={(l) => onPostLike(p, l)}
+                            onUnlike={() => onPostUnlike(p)}
                         ></PostCard>
                     ))}
                 </div>

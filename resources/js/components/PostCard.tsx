@@ -5,26 +5,39 @@ import Avatar from "./Avatar";
 import { authContext } from "../context/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { Like } from "../model/like";
 
 function PostCard({
     post,
     likes,
     liked,
     commentCount,
+    onLike,
+    onUnlike,
 }: {
     post: Post;
     likes: number;
     liked: string | null;
     commentCount: number;
+    onLike: (l: Like) => void;
+    onUnlike: () => void;
 }) {
     const auth = useContext(authContext);
 
     async function like() {
         if (liked == null) {
-            await likeService.likePost(post.id);
+            let like = await likeService.likePost(post.id);
+            onLike(like);
         } else {
             await likeService.unlikePost(liked);
+            onUnlike();
         }
+    }
+
+    function getLikeButtonColor() {
+        return liked != null
+            ? "bg-blue-500 text-white hover:bg-blue-600"
+            : "hover:bg-gray-100";
     }
 
     return (
@@ -57,13 +70,13 @@ function PostCard({
                         </button>
                         <button
                             onClick={like}
-                            className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100"
+                            className={`px-2 border rounded-md flex gap-2 items-center ${getLikeButtonColor()}`}
                         >
                             <FontAwesomeIcon
                                 icon={faThumbsUp}
                                 className="text-blue-400"
                             />
-                            <span className="text-sm">Like({likes})</span>
+                            <span className="text-sm">Like ({likes})</span>
                         </button>
                     </div>
                 </>

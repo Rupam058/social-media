@@ -5,6 +5,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RedisController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
