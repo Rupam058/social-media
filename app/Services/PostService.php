@@ -9,9 +9,11 @@ use App\Models\Post;
 class PostService {
 
     private LikeService $likeService;
+    private CommentService $commentService;
 
-    public function __construct(LikeService $likeService) {
+    public function __construct(LikeService $likeService, CommentService $commentService) {
         $this->likeService = $likeService;
+        $this->commentService = $commentService;
     }
 
     public function getPosts(string|null $userId) {
@@ -23,7 +25,7 @@ class PostService {
             array_push($posts, new PostResponse(
                 post: $post,
                 likes: $this->likeService->getLikeCount($post->id),
-                comments: 0,
+                comments: $this->commentService->getCommentCount($post->id),
                 liked: $userId != null ? $this->likeService->userLikesPost($userId, $post->id) : null
             ));
         }
