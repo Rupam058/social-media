@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Models\Comment;
 use App\Services\CommentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller {
     public function __construct(protected CommentService $commentService) {
@@ -15,17 +17,21 @@ class CommentController extends Controller {
         $validated = $req->validated();
 
         return $this->commentService->createComment(
-            userId: '0195b937-5c21-7329-9d86-e756299e6448',
+            userId: Auth::id(),
             postId: $validated['post_id'],
             content: $validated['content']
         );
+    }
+
+    public function getPostComments(string $postId) {
+        return $this->commentService->getPostComments($postId);
     }
 
     public function updateComment(UpdateCommentRequest $req, string $id) {
         $validated = $req->validated();
 
         $comment = $this->commentService->updateComment(
-            userId: '0195b937-5c21-7329-9d86-e756299e6448',
+            userId: Auth::id(),
             commentId: $id,
             content: $validated['content']
         );
@@ -40,7 +46,7 @@ class CommentController extends Controller {
     }
 
     public function deleteComment(string $id) {
-        if ($this->commentService->deleteComment(userId: '0195b937-5c21-7329-9d86-e756299e6448', commentId: $id)) {
+        if ($this->commentService->deleteComment(userId: Auth::id(), commentId: $id)) {
             return response()->noContent(status: 200);
         } else {
             return response()->json([

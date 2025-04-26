@@ -1,11 +1,18 @@
-import { useContext } from "react";
-import { APP_BASE_URL, likeService } from "../bootstarp";
+import { useContext, useState } from "react";
+import {
+    APP_BASE_URL,
+    commentService,
+    likeService,
+    postService,
+} from "../bootstarp";
 import { Post } from "../model/post";
 import Avatar from "./Avatar";
 import { authContext } from "../context/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { Like } from "../model/like";
+import { Comment } from "../model/comment";
+import CommentSection from "./CommentSection";
 
 function PostCard({
     post,
@@ -14,6 +21,7 @@ function PostCard({
     commentCount,
     onLike,
     onUnlike,
+    onComment,
 }: {
     post: Post;
     likes: number;
@@ -21,7 +29,11 @@ function PostCard({
     commentCount: number;
     onLike: (l: Like) => void;
     onUnlike: () => void;
+    onComment: (c: Comment[]) => void;
 }) {
+    const [commentSection, setCommentSection] = useState(false);
+    const [comments, setComments] = useState<Comment[]>([]);
+
     const auth = useContext(authContext);
 
     async function like() {
@@ -32,6 +44,20 @@ function PostCard({
             await likeService.unlikePost(liked);
             onUnlike();
         }
+    }
+
+    async function toggleCommentSection() {
+        if (!commentSection) {
+            let comments = await postService.getPostComments(post.id);
+            setComments(comments);
+        }
+        setCommentSection(!commentSection);
+    }
+
+    async function createComment(content: string) {
+        let comments = await commentService.createComment(post.id, content);
+        onComment(comments);
+        setComments(comments);
     }
 
     function getLikeButtonColor() {
@@ -61,12 +87,17 @@ function PostCard({
             {auth.authenticatedUser != null ? (
                 <>
                     <div className="flex gap-2 items-center mt-4">
-                        <button className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100">
+                        <button
+                            onClick={toggleCommentSection}
+                            className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100"
+                        >
                             <FontAwesomeIcon
                                 icon={faComment}
                                 className="text-blue-400"
                             />
-                            <span className="text-sm">Comment</span>
+                            <span className="text-sm">
+                                Comment ({commentCount})
+                            </span>
                         </button>
                         <button
                             onClick={like}
@@ -80,6 +111,13 @@ function PostCard({
                         </button>
                     </div>
                 </>
+            ) : null}
+            {/* Comment section */}
+            {commentSection ? (
+                <CommentSection
+                    comments={comments}
+                    createComment={createComment}
+                />
             ) : null}
         </div>
     );

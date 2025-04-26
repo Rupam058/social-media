@@ -6,6 +6,7 @@ import { APP_BASE_URL } from "../bootstarp";
 import PostCard from "../components/PostCard";
 import CreatePost from "../components/CreatePost";
 import { Like } from "../model/like";
+import { Comment } from "../model/comment";
 
 function Posts() {
     const [posts, setPosts] = useState<PostResponse[]>([]);
@@ -65,6 +66,10 @@ function Posts() {
         updatePost(p.post, { liked: null, likes: p.likes - 1 });
     }
 
+    function onPostComment(p: PostResponse, comments: Comment[]) {
+        updatePost(p.post, { comments: comments.length });
+    }
+
     function updatePost(p: Post, data: object) {
         setPosts(
             posts.map((v) => {
@@ -94,6 +99,7 @@ function Posts() {
                             commentCount={p.comments}
                             onLike={(l) => onPostLike(p, l)}
                             onUnlike={() => onPostUnlike(p)}
+                            onComment={(comments) => onPostComment(p, comments)}
                         ></PostCard>
                     ))}
                 </div>

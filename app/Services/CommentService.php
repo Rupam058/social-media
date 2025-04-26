@@ -6,12 +6,18 @@ use App\Models\Comment;
 use App\Models\Like;
 
 class CommentService {
-    public function createComment(string $userId, string $postId, string $content): Comment {
-        return Comment::create([
+    public function createComment(string $userId, string $postId, string $content) {
+        Comment::create([
             "user_id" => $userId,
             "post_id" => $postId,
             "content" => $content
         ]);
+
+        return $this->getPostComments($postId);
+    }
+
+    public function getPostComments(string $postId) {
+        return Comment::where("post_id", $postId)->orderBy('created_at', 'desc')->get();
     }
 
     public function updateComment(string $userId, string $commentId, string $content): Comment | null {

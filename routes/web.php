@@ -33,6 +33,7 @@ Route::prefix('/api')->group(function () {
             ->middleware('auth:sanctum');
         Route::put('/{id}', [PostController::class, 'updatePost']);
         Route::delete('/{id}', [PostController::class, 'deletePost']);
+        Route::get('/{id}/comments', [CommentController::class, 'getPostComments']);
     });
 
     Route::prefix('/likes')->group(function () {
