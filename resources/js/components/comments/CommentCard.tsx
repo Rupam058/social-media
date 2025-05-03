@@ -1,5 +1,5 @@
-import { Comment } from "../model/comment";
-import Avatar from "./Avatar";
+import { Comment } from "../../model/comment";
+import Avatar from "../base/Avatar";
 
 function CommentCard({ comment }: { comment: Comment }) {
     return (

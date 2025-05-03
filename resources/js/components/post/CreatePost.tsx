@@ -1,5 +1,5 @@
-import Avatar from "./Avatar";
-import { Post, PostResponse } from "../model/post";
+import Avatar from "../base/Avatar";
+import { Post, PostResponse } from "../../model/post";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faImage,
@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import UploadImageModal from "./UploadImageModal";
 import { useState } from "react";
-import { postService } from "../bootstarp";
+import { postService } from "../../bootstarp";
 
 function CreatePost({
     onPostCreated,

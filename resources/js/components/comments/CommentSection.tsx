@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { Comment } from "../model/comment";
-import { authContext } from "../context/auth";
-import Avatar from "./Avatar";
-import { APP_BASE_URL } from "../bootstarp";
+import { Comment } from "../../model/comment";
+import { authContext } from "../../context/auth";
+import Avatar from "../base/Avatar";
+import { APP_BASE_URL } from "../../bootstarp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import CommentCard from "./CommentCard";

@@ -3,8 +3,8 @@ import { postService } from "../bootstarp";
 import { Post, PostResponse } from "../model/post";
 import { authContext } from "../context/auth";
 import { APP_BASE_URL } from "../bootstarp";
-import PostCard from "../components/PostCard";
-import CreatePost from "../components/CreatePost";
+import PostCard from "../components/post/PostCard";
+import CreatePost from "../components/post/CreatePost";
 import { Like } from "../model/like";
 import { Comment } from "../model/comment";
 

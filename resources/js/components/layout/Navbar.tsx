@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link } from "wouter";
-import { authContext } from "../context/auth";
+import { authContext } from "../../context/auth";
 
 function Navbar() {
     const auth = useContext(authContext);

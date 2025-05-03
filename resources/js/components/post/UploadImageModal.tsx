@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import Modal from "./Modal";
+import Modal from "../base/Modal";
 
 function UploadImageModal({
     open,

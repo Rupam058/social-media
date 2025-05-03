@@ -4,15 +4,15 @@ import {
     commentService,
     likeService,
     postService,
-} from "../bootstarp";
-import { Post } from "../model/post";
-import Avatar from "./Avatar";
-import { authContext } from "../context/auth";
+} from "../../bootstarp";
+import { Post } from "../../model/post";
+import Avatar from "../base/Avatar";
+import { authContext } from "../../context/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-import { Like } from "../model/like";
-import { Comment } from "../model/comment";
-import CommentSection from "./CommentSection";
+import { Like } from "../../model/like";
+import { Comment } from "../../model/comment";
+import CommentSection from "../comments/CommentSection";
 
 function PostCard({
     post,

@@ -3,7 +3,7 @@ import Posts from "./views/Posts";
 import Login from "./views/Login";
 import { useHashLocation } from "wouter/use-hash-location";
 import { AuthProvider } from "./context/auth";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 
 function App() {
     return (
