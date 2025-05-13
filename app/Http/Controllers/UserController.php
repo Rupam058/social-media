@@ -41,7 +41,38 @@ class UserController extends Controller {
             return response()->json(["message" => "Avatar Set"], status: 201);
         };
 
-        return response()->json(["error" => "error occured"]);
+        return response($hash);
+    }
+
+    public function setDescription(Request $req) {
+        $description = $req->getContent();
+        if ($description == null) {
+            return response()->json(["error" => "Description is empty"], status: 400);
+        }
+
+        $this->userService->setUserDescription(user: Auth::id(), description: $description);
+
+        return response()->json(["message" => "Description Set"], status: 201);
+    }
+
+    public function setBanner(Request $req) {
+        $req->validate([
+            "image" => "required|file|mimes:jpeg,png,jpg,gif,svg|max:2048"
+        ]);
+
+        $image = $req->file("image");
+        if (!$image->isValid()) {
+            return;
+        }
+
+        if (!$image->store("banners", "public")) {
+            return;
+        }
+
+        $hash = $image->hashName();
+        $this->userService->setUserBanner(user: Auth::id(), banner: $hash);
+
+        return response()->json(["message" => "Banner Set"], status: 201);
     }
 
     public function login(Request $req) {

@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Responses\UserMeta;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 
 class UserService {
     public function register(string $email, string $password) {
@@ -25,6 +27,26 @@ class UserService {
         return true;
     }
 
+    private function generateUniqueUsername(string $email): string {
+        // Extract part before @ in email
+        $baseUsername = explode('@', $email)[0];
+
+        // Remove special characters and spaces
+        $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', $baseUsername);
+
+        // Check if username exists
+        $username = $baseUsername;
+        $counter = 1;
+
+        while ($this->getUserByUsername($username) !== null) {
+            // If username exists, append a number
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        return $username;
+    }
+
     public function getUserByEmail(string $email): User | null {
         $normalizedEmail = strtolower($email);
         return User::query()->where("email", $normalizedEmail)->first();
@@ -32,6 +54,11 @@ class UserService {
     public function getUserById(string $id): User | null {
         return User::query()
             ->where("id", $id)
+            ->first();
+    }
+    public function getUserByusername(string $username): User | null {
+        return User::query()
+            ->where("username", $username)
             ->first();
     }
 
@@ -86,6 +113,57 @@ class UserService {
         return true;
     }
 
+    public function setUserDescription(string $user, string $description) {
+        $user = $this->getUserById($user);
+        if ($user == null) {
+            return;
+        }
+
+        $user->description = $description;
+        $user->save();
+    }
+
+    public function setUserBanner(string $user, string $banner) {
+        $user = $this->getUserById($user);
+        if ($user == null) {
+            return;
+        }
+
+        $user->banner = $banner;
+        $user->save();
+    }
+
+    private function updateCachedMeta(User $user) {
+        $meta = $this->userMetaFromUser($user);
+        Redis::set($this->userMetaCatcheKey($user->id), json_encode($meta->toJson()));
+    }
+
+    private function userMetaFromUser(User $user): UserMeta {
+        return new UserMeta(
+            id: $user->id,
+            username: $user->username,
+            name: $user->name,
+            avatar: $user->avatar
+        );
+    }
+
+    public function getUserMetaById(string $id): UserMeta | null {
+        $cached = Redis::get($this->userMetaCatcheKey($id));
+        if ($cached != null) {
+            return $cached != "null" ? UserMeta::fromJson(json_decode($cached, true)) : null;
+        }
+
+        $user = $this->getUserById($id);
+        if ($user == null) {
+            Redis::set($this->userMetaCatcheKey($id), "null");
+            return null;
+        }
+
+        $meta = $this->userMetaFromUser($user);
+        Redis::set($this->userMetaCatcheKey($id), json_encode($meta->toJson()));
+        return $meta;
+    }
+
     public function onThirdPartyCallback(string $provider, string $email, string $avatar) {
         $normalizedEmail = strtolower($email);
         $user = $this->getUserByEmail($normalizedEmail);
@@ -111,5 +189,9 @@ class UserService {
             "password" => "",
             "description" => "",
         ]);
+    }
+
+    private function userMetaCatcheKey(string $id) {
+        return "user_meta_$id";
     }
 }

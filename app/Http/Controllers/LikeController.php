@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateLikeRequest;
 use App\Services\LikeService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller {
@@ -13,7 +12,10 @@ class LikeController extends Controller {
 
     public function createLike(CreateLikeRequest $req) {
         $validated = $req->validated();
-        $like = $this->likeService->createLike(userId: Auth::id(), postId: $validated['post_id']);
+        $like = $this->likeService->createLike(
+            userId: Auth::id(),
+            postId: $validated['post_id']
+        );
 
         if ($like == null) {
             return response()->json([

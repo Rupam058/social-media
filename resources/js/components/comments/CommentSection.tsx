@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { Comment } from "../../model/comment";
+import { Comment, CommentResponse } from "../../model/comment";
 import { authContext } from "../../context/auth";
 import Avatar from "../base/Avatar";
-import { APP_BASE_URL } from "../../bootstarp";
+import { APP_BASE_URL, DEFAULT_AVATAR } from "../../bootstarp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import CommentCard from "./CommentCard";
@@ -11,7 +11,7 @@ function CommentSection({
     comments,
     createComment,
 }: {
-    comments: Comment[];
+    comments: CommentResponse[];
     createComment: (c: string) => void;
 }) {
     const auth = useContext(authContext);
@@ -27,7 +27,11 @@ function CommentSection({
             {auth.authenticatedUser != null ? (
                 <div className="flex items-center gap-4">
                     <Avatar
-                        image={`http://localhost:8000/storage/avatars/G4Rrilb4ekgy3VT1E7R0YKTIaA9qX21EK7MQFeZ6.png`}
+                        image={
+                            auth.authenticatedUser.avatar
+                                ? `${APP_BASE_URL}/storage/avatars/${auth.authenticatedUser.avatar}`
+                                : DEFAULT_AVATAR
+                        }
                         customClass="w-10 h-10"
                     />
                     <input
@@ -48,7 +52,7 @@ function CommentSection({
 
             <div className="flex flex-col gap-2 mt-4">
                 {comments.map((c) => (
-                    <CommentCard key={c.id} comment={c} />
+                    <CommentCard key={c.comment.id} comment={c} />
                 ))}
             </div>
         </div>

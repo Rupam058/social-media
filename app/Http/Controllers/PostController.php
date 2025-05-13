@@ -13,8 +13,9 @@ class PostController extends Controller {
     public function __construct(protected PostService $postService) {
     }
 
-    public function getPosts() {
-        return response()->json($this->postService->getPosts(userId: Auth::id()));
+    public function getPosts(Request $req) {
+        $user = $req->query("user");
+        return response()->json($this->postService->getPosts(Auth::id(), $user));
     }
 
     public function createPost(CreatePostRequest $request) {

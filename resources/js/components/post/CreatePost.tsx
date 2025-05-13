@@ -7,8 +7,10 @@ import {
     faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import UploadImageModal from "./UploadImageModal";
-import { useState } from "react";
-import { postService } from "../../bootstarp";
+import { useContext, useState } from "react";
+import { APP_BASE_URL, DEFAULT_AVATAR, postService } from "../../bootstarp";
+import { authContext } from "../../context/auth";
+import Button from "../base/Button";
 
 function CreatePost({
     onPostCreated,
@@ -18,6 +20,8 @@ function CreatePost({
     const [imageUploadModal, setImageUploadModal] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [caption, setCaption] = useState("");
+
+    const auth = useContext(authContext);
 
     function onFileClose(file: File | null) {
         setImageUploadModal(false);
@@ -38,7 +42,11 @@ function CreatePost({
     return (
         <div className="bg-white p-4 border rounded-md flex gap-4">
             <Avatar
-                image="http://localhost:8000/storage/avatars/G4Rrilb4ekgy3VT1E7R0YKTIaA9qX21EK7MQFeZ6.png"
+                image={
+                    auth.authenticatedUser?.avatar
+                        ? `${APP_BASE_URL}/storage/avatars/${auth.authenticatedUser.avatar}`
+                        : DEFAULT_AVATAR
+                }
                 customClass="w-16 h-16"
             />
             <div className="flex-1">
@@ -50,8 +58,10 @@ function CreatePost({
                 ></textarea>
                 <div className="flex justify-between items-center mt-2">
                     <div className="flex gap-2">
-                        <button
-                            className="px-2 border rounded-md flex gap-2 items-center hover:bg-gray-100"
+                        <Button
+                            color="white"
+                            bold={false}
+                            size="small"
                             onClick={() => setImageUploadModal(true)}
                         >
                             <FontAwesomeIcon
@@ -59,7 +69,7 @@ function CreatePost({
                                 className="text-blue-400"
                             />
                             {imageFile != null ? imageFile.name : "Add Image"}
-                        </button>
+                        </Button>
                         {imageFile != null ? (
                             <button>
                                 <FontAwesomeIcon
@@ -69,13 +79,10 @@ function CreatePost({
                             </button>
                         ) : null}
                     </div>
-                    <button
-                        onClick={post}
-                        className="btn flex items-center gap-2"
-                    >
+                    <Button onClick={post}>
                         Post
                         <FontAwesomeIcon icon={faPaperPlane} />
-                    </button>
+                    </Button>
                 </div>
             </div>
 

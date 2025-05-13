@@ -1,3 +1,5 @@
+import { UserMeta } from "./user";
+
 export interface Post {
     id: string;
     caption: string;
@@ -8,5 +10,6 @@ export interface PostResponse {
     post: Post;
     likes: number;
     comments: number;
-    liked: String | null;
+    liked: string | null;
+    author: UserMeta;
 }

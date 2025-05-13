@@ -2,7 +2,7 @@ import { KyInstance } from "ky";
 import { http } from "../utils/http";
 import { Post, PostResponse } from "../model/post";
 import { PaginatedResponse } from "../model/http";
-import { Comment } from "../model/comment";
+import { Comment, CommentResponse } from "../model/comment";
 
 export class PostSerives {
     private httpClient: KyInstance = http("/api/posts");
@@ -11,7 +11,7 @@ export class PostSerives {
         return this.httpClient.get(`?page=${page}`).json();
     }
 
-    async getPostComments(postId: string): Promise<Comment[]> {
+    async getPostComments(postId: string): Promise<CommentResponse[]> {
         return this.httpClient.get(`${postId}/comments`).json();
     }
 
