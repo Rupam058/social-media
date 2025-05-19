@@ -50,10 +50,14 @@ Route::prefix('/api')->group(function () {
     Route::prefix('/follows')->group(function () {
         Route::get('/', [FollowController::class, 'getFollows']);
         Route::post('/', [FollowController::class, 'createFollow']);
+        Route::get("/following/{toUser}", [FollowController::class, 'getFollow']);
         Route::delete('/{id}', [FollowController::class, 'deleteFollow']);
     });
 
+    Route::get("/user/{username}", [UserController::class, 'getUserByUsername']);
     Route::prefix('/user')->middleware("auth:sanctum")->group(function () {
         Route::post('/avatar', [UserController::class, 'setAvatar']);
+        Route::post('/banner', [UserController::class, 'setBanner']);
+        Route::post('/description', [UserController::class, 'setDescription']);
     });
 });

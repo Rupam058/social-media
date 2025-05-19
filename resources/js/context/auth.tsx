@@ -19,16 +19,13 @@ export const AuthProvider = (props: { children: ReactNode }) => {
 
     const loadAuthenticatedUser = async () => {
         // loading CSRF cookies in the initial load.
-        const csrfResponse = await fetch(
-            `${APP_BASE_URL}/sanctum/csrf-cookie`,
-            {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    Accept: "application/json",
-                },
+        await fetch(`${APP_BASE_URL}/sanctum/csrf-cookie`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                Accept: "application/json",
             },
-        );
+        });
 
         const user = await authService.loadUser();
         setAuthenticatedUser(user);

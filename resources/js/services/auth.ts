@@ -3,11 +3,14 @@ import { http } from "../utils/http";
 
 export interface UserDetails {
     email: string;
+    username: string;
+    avatar: string;
 }
 
 export class AuthService {
     private httpClient: KyInstance = http("/auth");
     public user: UserDetails | null = null;
+    
     async loginWithPassword(
         email: string,
         password: string,

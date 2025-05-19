@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import Modal from "../base/Modal";
+import Button from "../base/Button";
 
 function UploadImageModal({
     open,
@@ -31,12 +32,13 @@ function UploadImageModal({
                     className="hidden"
                     onChange={onFileChange}
                 />
-                <button
+                <Button
+                    color="white"
                     onClick={openFilePicker}
-                    className="border rounded-xl p-4 flex justify-center items-center w-52 h-52 text-3xl mt-4"
+                    className="mt-4 w-52 h-52 text-3xl"
                 >
                     +
-                </button>
+                </Button>
             </div>
         </Modal>
     );

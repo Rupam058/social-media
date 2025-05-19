@@ -1,6 +1,6 @@
 import { KyInstance } from "ky";
 import { http } from "../utils/http";
-import { Comment } from "../model/comment";
+import { Comment, CommentResponse } from "../model/comment";
 
 export class CommentService {
     private httpClient: KyInstance = http("/api/comments");
@@ -8,7 +8,7 @@ export class CommentService {
     public async createComment(
         postId: string,
         content: string,
-    ): Promise<Comment[]> {
+    ): Promise<CommentResponse[]> {
         return await this.httpClient
             .post("", {
                 json: {

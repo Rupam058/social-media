@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ProfileResponse;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,38 @@ class UserController extends Controller {
             return response()->json(["message" => "Avatar Set"], status: 201);
         };
 
-        return response()->json(["error" => "error occured"]);
+        return response($hash);
+    }
+
+    public function setDescription(Request $req) {
+        $description = $req->getContent();
+        if ($description == null) {
+            return response()->json(["error" => "Description is empty"], status: 400);
+        }
+
+        $this->userService->setUserDescription(user: Auth::id(), description: $description);
+
+        return response()->json(["message" => "Description Set"], status: 201);
+    }
+
+    public function setBanner(Request $req) {
+        $req->validate([
+            "image" => "required|file|mimes:jpeg,png,jpg,gif,svg|max:2048"
+        ]);
+
+        $image = $req->file("image");
+        if (!$image->isValid()) {
+            return;
+        }
+
+        if (!$image->store("banners", "public")) {
+            return;
+        }
+
+        $hash = $image->hashName();
+        $this->userService->setUserBanner(user: Auth::id(), banner: $hash);
+
+        return response()->json(["message" => "Banner Set"], status: 201);
     }
 
     public function login(Request $req) {
@@ -83,6 +115,24 @@ class UserController extends Controller {
 
         return response()->json([
             "email" => $user->email,
+            "username" => $user->username,
+            "avatar" => $user->avatar
         ]);
+    }
+
+    public function getUserByUsername(string $username) {
+        $user = $this->userService->getUserByUsername($username);
+        if ($user == null) {
+            return response()->json(["error" => "User not found"], status: 404);
+        }
+
+        return response()->json(new ProfileResponse(
+            id: $user->id,
+            username: $user->username,
+            name: $user->name,
+            avatar: $user->avatar,
+            description: $user->description,
+            banner: $user->banner,
+        ));
     }
 }

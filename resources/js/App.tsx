@@ -4,6 +4,8 @@ import Login from "./views/Login";
 import { useHashLocation } from "wouter/use-hash-location";
 import { AuthProvider } from "./context/auth";
 import Navbar from "./components/layout/Navbar";
+import Profile from "./views/Profile";
+import Following from "./views/Following";
 
 function App() {
     return (
@@ -14,6 +16,11 @@ function App() {
                     <Switch>
                         <Route path={`/`} component={Posts} />
                         <Route path={`/login`} component={Login} />
+                        <Route
+                            path={`/profile/:username`}
+                            component={Profile}
+                        />
+                        <Route path={`/following`} component={Following} />
                         <Route>404</Route>
                     </Switch>
                 </Router>
