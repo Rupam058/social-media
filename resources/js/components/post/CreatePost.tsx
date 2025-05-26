@@ -53,7 +53,7 @@ function CreatePost({
                     className="bg-gray-100 w-full p-4 h-28 rounded-md"
                     placeholder="What's on your mind?"
                 ></textarea>
-                <div className="flex justify-between items-center mt-2">
+                <div className="flex justify-between flex-col md:flex-row gap-2 md:gap-0 items-center mt-2">
                     <div className="flex gap-2">
                         <Button
                             color="white"

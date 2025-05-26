@@ -5,14 +5,18 @@ import Avatar from "../base/Avatar";
 import { APP_BASE_URL, DEFAULT_AVATAR } from "../../bootstarp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import CommentCard from "./CommentCard";
+import CommentsList from "./CommentList";
 
 function CommentSection({
     comments,
     createComment,
+    onCommentDelete,
+    onCommentUpdate,
 }: {
     comments: CommentResponse[];
     createComment: (c: string) => void;
+    onCommentDelete?: (commentId: string) => void;
+    onCommentUpdate?: (commentId: string, newContent: string) => void;
 }) {
     const auth = useContext(authContext);
     const [content, setContent] = useState("");
@@ -22,8 +26,10 @@ function CommentSection({
         : DEFAULT_AVATAR;
 
     function create() {
-        createComment(content);
-        setContent("");
+        if (content.trim()) {
+            createComment(content);
+            setContent("");
+        }
     }
 
     return (
@@ -47,10 +53,13 @@ function CommentSection({
                 </div>
             ) : null}
 
-            <div className="flex flex-col gap-2 mt-4">
-                {comments.map((c) => (
-                    <CommentCard key={c.comment.id} comment={c} />
-                ))}
+            <div className="mt-4">
+                <CommentsList
+                    postId="" // This is not used since we're passing comments directly
+                    comments={comments}
+                    onCommentDelete={onCommentDelete}
+                    onCommentUpdate={onCommentUpdate}
+                />
             </div>
         </div>
     );

@@ -17,8 +17,19 @@ Route::get('/', function () {
 Route::prefix('/auth')->group(function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
-    Route::post('/logout', [UserController::class, 'logout']);
-    Route::get('/user', [UserController::class, 'getUserDetails']);
+
+    Route::middleware(('auth:sanctum'))->group(function () {
+        Route::post('/logout', [UserController::class, 'logout']);
+        Route::get('/user', [UserController::class, 'getUserDetails']);
+        Route::post('/password', [UserController::class, 'changePassword']);
+    });
+
+
+    Route::post("/initReset", [UserController::class, 'initResetPassword']);
+    Route::get("reset", [UserController::class, 'resetPasswordView'])->name('resetPasswordView');
+    Route::post("reset", [UserController::class, 'resetPassword']);
+
+    Route::get("/confirm", [UserController::class, 'confirmEmail'])->name('confirmEmail');
 
     // First Redirect the user to google for authentication
     Route::get("/redirect/google", [GoogleAuthController::class, 'redirect']);
@@ -29,10 +40,11 @@ Route::prefix('/auth')->group(function () {
 Route::prefix('/api')->group(function () {
     Route::prefix('/posts')->group(function () {
         Route::get('/', [PostController::class, 'getPosts']);
-        Route::post('/', [PostController::class, 'createPost'])
-            ->middleware('auth:sanctum');
-        Route::put('/{id}', [PostController::class, 'updatePost']);
-        Route::delete('/{id}', [PostController::class, 'deletePost']);
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [PostController::class, 'createPost']);
+            Route::put('/{id}', [PostController::class, 'updatePost']);
+            Route::delete('/{id}', [PostController::class, 'deletePost']);
+        });
         Route::get('/{id}/comments', [CommentController::class, 'getPostComments']);
     });
 

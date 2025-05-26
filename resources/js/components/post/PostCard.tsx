@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Post, PostResponse } from "../../model/post";
 import Avatar from "../base/Avatar";
 import { authContext } from "../../context/auth";
@@ -30,11 +30,12 @@ function PostCard({
 }) {
     const [commentSection, setCommentSection] = useState(false);
     const [comments, setComments] = useState<CommentResponse[]>([]);
+    const [commentCount, setCommentCount] = useState(post.comments);
 
     const auth = useContext(authContext);
 
     const imageUrl = post.author.avatar
-        ? `${APP_BASE_URL}/storage/uploads/${post.author.avatar}`
+        ? `${APP_BASE_URL}/storage/avatars/${post.author.avatar}`
         : DEFAULT_AVATAR;
 
     if (!post) {
@@ -46,6 +47,18 @@ function PostCard({
             </div>
         );
     }
+
+    // Update comment count when post prop changes
+    useEffect(() => {
+        setCommentCount(post.comments);
+    }, [post.comments]);
+
+    // Update comment count when comments array changes
+    useEffect(() => {
+        if (comments.length > 0) {
+            setCommentCount(comments.length);
+        }
+    }, [comments]);
 
     async function like() {
         if (post.liked == null) {
@@ -61,6 +74,7 @@ function PostCard({
         if (!commentSection) {
             let comments = await postService.getPostComments(post.post.id);
             setComments(comments);
+            setCommentCount(comments.length);
         }
 
         setCommentSection(!commentSection);
@@ -73,6 +87,7 @@ function PostCard({
         );
         onComment(comments);
         setComments(comments);
+        setCommentCount(comments.length);
     }
 
     return (
@@ -111,7 +126,7 @@ function PostCard({
                                 icon={faComment}
                                 className="text-blue-400"
                             />
-                            Comment ({post.comments.toLocaleString()})
+                            Comment ({commentCount.toLocaleString()})
                         </Button>
 
                         <Button

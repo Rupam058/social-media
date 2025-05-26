@@ -27,7 +27,7 @@ function Navbar() {
         : DEFAULT_AVATAR;
 
     return (
-        <div className="bg-white py-4 px-2">
+        <div className="bg-white py-4 px-2 md:px-0">
             <div className="main-center flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <h2 className="text-xl font-bold text-blue-500">

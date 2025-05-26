@@ -6,6 +6,9 @@ import { AuthProvider } from "./context/auth";
 import Navbar from "./components/layout/Navbar";
 import Profile from "./views/Profile";
 import Following from "./views/Following";
+import Register from "./views/Register";
+import ResetPassword from "./views/ResetPassword";
+import Settings from "./views/Settings";
 
 function App() {
     return (
@@ -21,6 +24,12 @@ function App() {
                             component={Profile}
                         />
                         <Route path={`/following`} component={Following} />
+                        <Route path={`/register`} component={Register} />
+                        <Route
+                            path={`/reset-password`}
+                            component={ResetPassword}
+                        />
+                        <Route path={"/settings"} component={Settings} />
                         <Route>404</Route>
                     </Switch>
                 </Router>

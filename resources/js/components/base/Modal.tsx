@@ -4,10 +4,12 @@ function Modal({
     open,
     children,
     onClose,
+    className = "",
 }: {
     open: boolean;
     children: React.ReactNode;
     onClose: () => void;
+    className?: string;
 }) {
     const modalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -39,7 +41,7 @@ function Modal({
                 transform: "translate(-50%, -50%)",
             }}
         >
-            <div className="p-8">{children}</div>
+            <div className={`p-8 rounded-md ${className}`}>{children}</div>
         </dialog>
     );
 }

@@ -3,10 +3,14 @@
 namespace App\Services;
 
 use App\Http\Responses\UserMeta;
+use App\Mail\ConfirmEmail;
+use App\Mail\ResetPassword;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\URL;
 
 class UserService {
     public function register(string $email, string $password) {
@@ -19,7 +23,7 @@ class UserService {
         // Generate a username based on the email
         $username = $this->generateUsername($normalizedEmail);
 
-        User::create([
+        $user = User::create([
             "email" => $normalizedEmail,
             "name" => 'Cooler User',
             "username" => $username,
@@ -28,6 +32,57 @@ class UserService {
             "description" => "not coolest user ever"
         ]);
 
+        Mail::to($user)->send(new ConfirmEmail(
+            URL::signedRoute("confirmEmail", ["token" => $user->id])
+        ));
+
+        return true;
+    }
+
+    public function confirmEmail(string $userId) {
+        $user = $this->getUserById($userId);
+        if ($user == null)
+            return;
+
+        $user->markEmailAsVerified();
+        $user->save();
+    }
+
+    public function initResetPassword(string $email) {
+        $user = $this->getUserByEmail($email);
+        if ($user == null)
+            return;
+
+        Mail::to($user)->send(new ResetPassword(
+            URL::signedRoute(
+                'resetPasswordView',
+                ['token' => $user->id]
+            )
+        ));
+    }
+
+    public function resetPassword(string $userId, string $password) {
+        $user = $this->getUserById(($userId));
+        if ($user == null)
+            return;
+
+        $user->password = Hash::make($password);
+        $user->save();
+
+        return response('Password reset successfully, you can now log In')->json([
+            'message' => 'Password reset successfully'
+        ]);
+    }
+
+    public function setPassword(string $userId, string $previous, string $new): bool {
+        $user = $this->getUserById($userId);
+        if ($user == null)
+            return false;
+        if (!Hash::check($previous, $user->getAuthPassword()))
+            return false;
+
+        $user->password = Hash::make($new);
+        $user->save();
         return true;
     }
 
@@ -115,18 +170,22 @@ class UserService {
 
         $user->banner = $banner;
         $user->save();
+
+        $this->updateCachedMeta($user);
     }
     private function updateCachedMeta(User $user) {
         $meta = $this->userMetaFromUser($user);
         Redis::set($this->userMetaCatcheKey($user->id), json_encode($meta->toJson()));
     }
 
+
     private function userMetaFromUser(User $user): UserMeta {
         return new UserMeta(
             id: $user->id,
             username: $user->username,
             name: $user->name,
-            avatar: $user->avatar
+            avatar: $user->avatar,
+            banner: $user->banner,
         );
     }
 

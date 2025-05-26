@@ -18,4 +18,18 @@ export class CommentService {
             })
             .json();
     }
+
+    public async updateComment(commentId: string, content: string) {
+        const comment = await this.httpClient.put(`${commentId}`, {
+            json: {
+                content: content,
+            },
+        });
+
+        return comment.ok;
+    }
+
+    public async deleteComment(commentId: string): Promise<boolean> {
+        return (await this.httpClient.delete(`${commentId}`)).ok;
+    }
 }

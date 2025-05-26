@@ -6,6 +6,7 @@ use App\Http\Responses\ProfileResponse;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller {
     public function __construct(protected UserService $userService) {
@@ -23,10 +24,31 @@ class UserController extends Controller {
         return response()->json(["message" => "User created"], status: 201);
     }
 
+    public function confirmEmail(Request $req) {
+        if (!$req->hasValidSignature()) {
+            abort(401);
+        }
+
+        $validated = $req->validate([
+            "token" => "required"
+        ]);
+
+        $userId = $validated["token"];
+        $this->userService->confirmEmail($userId);
+        return response("Successfully confirmed Email, thank You!");
+    }
+
     public function setAvatar(Request $req) {
         $req->validate([
             "image" => "file|mimes:jpeg,png,jpg,gif,svg|max:2048"
         ]);
+
+        $user = Auth::user();
+
+        // Delete previous banner if it exists
+        if ($user && $user->avatar) {
+            Storage::disk('public')->delete('banners/' . $user->banner);
+        }
 
         $image = $req->file("image");
         if (!$image->isValid()) {
@@ -61,6 +83,14 @@ class UserController extends Controller {
             "image" => "required|file|mimes:jpeg,png,jpg,gif,svg|max:2048"
         ]);
 
+        // Get current user
+        $user = Auth::user();
+
+        // Delete previous banner if it exists
+        if ($user && $user->banner) {
+            Storage::disk('public')->delete('banners/' . $user->banner);
+        }
+
         $image = $req->file("image");
         if (!$image->isValid()) {
             return;
@@ -93,7 +123,7 @@ class UserController extends Controller {
     public function logout() {
         try {
             // Logout the user
-            Auth::logout();
+            Auth::guard("web")->logout();
 
             return response()->json([
                 'message' => 'Successfully logged out'
@@ -118,6 +148,60 @@ class UserController extends Controller {
             "username" => $user->username,
             "avatar" => $user->avatar
         ]);
+    }
+
+    public function initResetPassword(Request $req) {
+        $validated = $req->validate([
+            "email" => "required"
+        ]);
+
+        $this->userService->initResetPassword($validated["email"]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'If the email exists in our system, a password reset link has been sent.'
+        ]);
+    }
+
+    public function resetPassword(Request $req) {
+        if (!$req->hasValidSignature()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired password reset link.'
+            ], 401);
+        }
+
+        $validated = $req->validate([
+            "token" => "required",
+            "password" => "required"
+        ]);
+
+        $userId = $req->query("token");
+        $this->userService->resetPassword($userId, $validated["password"]);
+
+        return response("Successfully reset password, you can now log in.");
+    }
+
+    public function resetPasswordView(Request $request) {
+        if (!$request->hasValidSignature()) {
+            abort(401);
+        }
+
+        $token = $request->query('token');
+        return view('reset_password', ['token' => $token]);
+    }
+
+    public function setPassword(Request $req) {
+        $validated = $req->validate([
+            "previous" => "required",
+            "new" => "required"
+        ]);
+
+        if (!$this->userService->setPassword(Auth::id(), $validated["previous"], $validated["new"])) {
+            return response()->json(["error" => "Incorrect password"], status: 401);
+        }
+
+        return response()->json(["message" => "Password Set"], status: 201);
     }
 
     public function getUserByUsername(string $username) {

@@ -94,6 +94,11 @@ function Profile() {
         setLocation("/settings");
     }
 
+    async function logout() {
+        await auth.logout();
+        setLocation("/login");
+    }
+
     return user != null ? (
         <div className="main-center mt-8">
             <div className="relative">
@@ -109,7 +114,7 @@ function Profile() {
                 />
             </div>
             <div className="w-full bg-white rounded-b-md border-b p-2 flex flex-col md:flex-row gap-2 justify-between items-center">
-                <div className="flex items-center gap-2 pl-4">
+                <div className="flex flex-col items-center gap-2 pl-4">
                     <b className="text-2xl">{user.name}</b>
                     <p className="text">(@{user.username})</p>
                 </div>
@@ -119,7 +124,10 @@ function Profile() {
                         {followId != null ? "Unfollow" : "Follow"}
                     </Button>
                 ) : (
-                    <Button onClick={settingsPage}>Settings</Button>
+                    <div className="flex gap-2 mt-5 md:mt-0">
+                        <Button onClick={settingsPage}>Settings</Button>
+                        <Button onClick={logout}>Log Out</Button>
+                    </div>
                 )}
             </div>
 

@@ -26,8 +26,13 @@ class GoogleAuthController {
             $email,
             $avatar
         )) {
-            return response()->json(['error' => 'Account Already Exists']);
+            // Create a redirect response with JSON data
+            return redirect("http://localhost:8000")
+                ->with('message', json_encode([
+                    'status' => 'error',
+                    'message' => 'Account already exists with a different authentication method'
+                ]));
         }
-        return redirect("http://localhost:8000/frontend/");
+        return redirect("http://localhost:8000");
     }
 }

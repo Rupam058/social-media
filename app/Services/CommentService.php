@@ -66,6 +66,13 @@ class CommentService {
 
         $comment->content = $content;
         $comment->save();
+
+        $cacheKey = $this->getCommentCountCacheKey($comment->post_id);
+        if (!Redis::exists($cacheKey)) {
+            $count = Comment::where("post_id", $comment->post_id)->count();
+            Redis::set($cacheKey, $count);
+        }
+
         return $comment;
     }
 
@@ -80,6 +87,12 @@ class CommentService {
         }
 
         $comment->delete();
+        // updating the Redis Cache
+        $cacheKey = $this->getCommentCountCacheKey($comment->post_id);
+        if (Redis::exists($cacheKey)) {
+            Redis::decr($cacheKey);
+        }
+
         return true;
     }
 
