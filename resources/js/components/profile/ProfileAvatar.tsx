@@ -34,7 +34,7 @@ function ProfileAvatar({
             {self ? (
                 <button
                     onClick={openFilePicker}
-                    className="container-child rounded-full flex justify-center items-center"
+                    className="container-child rounded-full flex justify-center items-center cursor-pointer"
                 >
                     <FontAwesomeIcon icon={faPlus} />
                 </button>

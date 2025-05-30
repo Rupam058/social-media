@@ -21,7 +21,7 @@ Route::prefix('/auth')->group(function () {
     Route::middleware(('auth:sanctum'))->group(function () {
         Route::post('/logout', [UserController::class, 'logout']);
         Route::get('/user', [UserController::class, 'getUserDetails']);
-        Route::post('/password', [UserController::class, 'changePassword']);
+        Route::post('/password', [UserController::class, 'setPassword']);
     });
 
 
@@ -54,9 +54,11 @@ Route::prefix('/api')->group(function () {
     });
 
     Route::prefix('/comments')->group(function () {
-        Route::post('/', [CommentController::class, 'createComment']);
-        Route::put('/{id}', [CommentController::class, 'updateComment']);
-        Route::delete('/{id}', [CommentController::class, 'deleteComment']);
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [CommentController::class, 'createComment']);
+            Route::put('/{id}', [CommentController::class, 'updateComment']);
+            Route::delete('/{id}', [CommentController::class, 'deleteComment']);
+        });
     });
 
     Route::prefix('/follows')->group(function () {
@@ -68,6 +70,8 @@ Route::prefix('/api')->group(function () {
 
     Route::get("/user/{username}", [UserController::class, 'getUserByUsername']);
     Route::prefix('/user')->middleware("auth:sanctum")->group(function () {
+        Route::post('/name', [UserController::class, 'setName']);
+        Route::post('/username', [UserController::class, 'setUserName']);
         Route::post('/avatar', [UserController::class, 'setAvatar']);
         Route::post('/banner', [UserController::class, 'setBanner']);
         Route::post('/description', [UserController::class, 'setDescription']);

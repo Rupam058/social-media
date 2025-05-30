@@ -25,11 +25,11 @@ class UserService {
 
         $user = User::create([
             "email" => $normalizedEmail,
-            "name" => 'Cooler User',
+            "name" => 'General User',
             "username" => $username,
             "auth_type" => "password",
             "password" => Hash::make($password),
-            "description" => "not coolest user ever"
+            "description" => ""
         ]);
 
         Mail::to($user)->send(new ConfirmEmail(
@@ -141,6 +141,69 @@ class UserService {
         }
     }
 
+    public function setUserName(string $userId, string $newUsername) {
+        // Get the user by ID
+        $user = $this->getUserById($userId);
+
+        if ($user == null) {
+            return [
+                'success' => false,
+                'message' => 'User not found'
+            ];
+        }
+
+        // Clean up the username (remove special chars, etc)
+        $cleanUsername = preg_replace('/[^a-zA-Z0-9_-]/', '', $newUsername);
+        // $cleanUsername = $newUsername;
+
+        // Check if username is empty after cleaning
+        if (empty($cleanUsername)) {
+            return [
+                'success' => false,
+                'message' => 'Username cannot be empty or contain only special characters'
+            ];
+        }
+
+        if ($cleanUsername !== $newUsername) {
+            return [
+                'success' => false,
+                'message' => 'Username contains invalid characters'
+            ];
+        }
+
+        // Check if the username is already taken by another user
+        $existingUser = $this->getUserByUsername($newUsername);
+        if ($existingUser !== null && $existingUser->id !== $userId) {
+            return [
+                'success' => false,
+                'message' => 'Username already taken'
+            ];
+        }
+
+        // Update the username
+        $user->username = $newUsername;
+        $user->save();
+
+        // Update the cached metadata
+        $this->updateCachedMeta($user);
+
+        return [
+            'success' => true,
+            'message' => 'Username updated successfully',
+            'username' => $newUsername
+        ];
+    }
+
+    public function setName(string $user, string $name) {
+        $user = $this->getUserById($user);
+        if ($user == null)
+            return false;
+
+        $user->name = $name;
+        $user->save();
+
+        $this->updateCachedMeta($user);
+    }
     public function setUserAvatar(string $user, string $avatar) {
         $user = $this->getUserById($user);
         if ($user == null)
@@ -229,7 +292,7 @@ class UserService {
 
         return User::create([
             "email" => $normalizedEmail,
-            "name" => $email,
+            "name" => 'Google User',
             "auth_type" => $provider,
             "username" => $username,
             "password" => "",

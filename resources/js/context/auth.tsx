@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { UserDetails } from "../services/auth";
 import { APP_BASE_URL, authService } from "../bootstarp";
+import UpdateUsername from "../components/user/UpdateUsername";
 
 export interface AuthContext {
     loaded: boolean;

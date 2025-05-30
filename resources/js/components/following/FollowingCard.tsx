@@ -23,11 +23,11 @@ function FollowingCard({
             <div>
                 <Link
                     to={`profile/${user.username}`}
-                    className={`text-xl mt-4 text-blue-500`}
+                    className={`text-xl mt-4 text-gray-900`}
                 >
                     {user.name}
+                    <p className="text-sm text-blue-500">@{user.username}</p>
                 </Link>
-                <p className="text-sm text-gray-500">@{user.username}</p>
             </div>
 
             <Button className="mt-4" onClick={onUnfollow}>

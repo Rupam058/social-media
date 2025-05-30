@@ -36,4 +36,17 @@ export class PostSerives {
             })
             .json();
     }
+
+    async updatePost(postId: string, content: string) {
+        const post = await this.httpClient.put(`${postId}`, {
+            json: {
+                content: content,
+            },
+        });
+        return post.ok;
+    }
+
+    async deletePost(postId: string): Promise<boolean> {
+        return (await this.httpClient.delete(`${postId}`)).ok;
+    }
 }

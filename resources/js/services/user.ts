@@ -14,6 +14,30 @@ export class UserService {
         }
     }
 
+    async updateUsername(username: string) {
+        const response = await this.httpClient.post("username", {
+            body: username,
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            throw new Error("Failed to update username");
+        }
+    }
+
+    async updateName(name: string) {
+        const nameResponse = await this.httpClient.post("name", {
+            body: name,
+        });
+
+        if (nameResponse.ok) {
+            return true;
+        } else {
+            throw new Error("Failed to update name");
+        }
+    }
+
     async updateAvatar(file: File): Promise<string> {
         const formData = new FormData();
         if (file != null) {

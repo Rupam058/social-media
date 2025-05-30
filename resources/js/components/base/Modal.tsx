@@ -41,7 +41,9 @@ function Modal({
                 transform: "translate(-50%, -50%)",
             }}
         >
-            <div className={`p-8 rounded-md ${className}`}>{children}</div>
+            <div className={`p-8 rounded-md border max-w-md ${className}`}>
+                {children}
+            </div>
         </dialog>
     );
 }

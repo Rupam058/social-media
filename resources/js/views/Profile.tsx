@@ -8,6 +8,7 @@ import ProfileAvatar from "../components/profile/ProfileAvatar";
 import Button from "../components/base/Button";
 import AboutMe from "../components/profile/AboutMe";
 import PostList from "../components/post/PostList";
+import Logout from "../components/profile/Logout";
 
 function Profile() {
     const params = useParams();
@@ -93,12 +94,6 @@ function Profile() {
     function settingsPage() {
         setLocation("/settings");
     }
-
-    async function logout() {
-        await auth.logout();
-        setLocation("/login");
-    }
-
     return user != null ? (
         <div className="main-center mt-8">
             <div className="relative">
@@ -126,7 +121,7 @@ function Profile() {
                 ) : (
                     <div className="flex gap-2 mt-5 md:mt-0">
                         <Button onClick={settingsPage}>Settings</Button>
-                        <Button onClick={logout}>Log Out</Button>
+                        <Logout />
                     </div>
                 )}
             </div>
@@ -148,7 +143,7 @@ function Profile() {
             </div>
         </div>
     ) : (
-        <p>You are not authenticated.</p>
+        <p className="text-center font-bold text-xl">Loading...</p>
     );
 }
 

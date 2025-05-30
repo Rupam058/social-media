@@ -69,8 +69,7 @@ function CommentCard({ comment, onDelete, onUpdate }: CommentCardProps) {
     const auth = useContext(authContext);
 
     // Check if the current user is the author of the comment
-    const isAuthor =
-        auth.authenticatedUser?.username === comment.author.username;
+    const isAuthor = auth.authenticatedUser?.name === comment.author.username;
 
     async function updateComment() {
         if (!isAuthor) return;
@@ -212,7 +211,11 @@ function CommentCard({ comment, onDelete, onUpdate }: CommentCardProps) {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Modal open={showDeleteModal} onClose={closeDeleteModal} className="border max-w-md">
+            <Modal
+                open={showDeleteModal}
+                onClose={closeDeleteModal}
+                className="border max-w-md"
+            >
                 <div className="text-center">
                     <h3 className="text-lg font-bold mb-4">Delete Comment</h3>
                     <p className="mb-6">

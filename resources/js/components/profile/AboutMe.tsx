@@ -29,8 +29,12 @@ function AboutMe({
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">About Me</h2>
                 {self ? (
-                    <button onClick={toggle}>
+                    <button
+                        onClick={toggle}
+                        className="cursor-pointer flex gap-2 items-center"
+                    >
                         <FontAwesomeIcon icon={editing ? faCheck : faPen} />
+                        {editing ? "Save" : "Edit"}
                     </button>
                 ) : null}
             </div>

@@ -38,6 +38,36 @@ class UserController extends Controller {
         return response("Successfully confirmed Email, thank You!");
     }
 
+    public function setUserName(Request $req) {
+        $username = $req->getContent();
+        if ($username == null) {
+            return response()->json(["error" => "Username is empty"], status: 400);
+        }
+
+        $result = $this->userService->setUserName(userId: Auth::id(), newUsername: $username);
+
+        if (!$result['success']) {
+            return response()->json(["error" => $result['message']], status: 400);
+        }
+
+        return response()->json([
+            "message" => "Username Set",
+            "username" => $result['username']
+        ], status: 201);
+    }
+
+
+    public function setName(Request $req) {
+        $name = $req->getContent();
+        if ($name == null) {
+            return response()->json(["error" => "Name is empty"], status: 400);
+        }
+
+        $this->userService->setName(user: Auth::id(), name: $name);
+
+        return response()->json(["message" => "Name Set"], status: 201);
+    }
+
     public function setAvatar(Request $req) {
         $req->validate([
             "image" => "file|mimes:jpeg,png,jpg,gif,svg|max:2048"
@@ -144,6 +174,7 @@ class UserController extends Controller {
         }
 
         return response()->json([
+            "name" => $user->name,
             "email" => $user->email,
             "username" => $user->username,
             "avatar" => $user->avatar

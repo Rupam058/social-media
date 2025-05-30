@@ -3,8 +3,9 @@ import { http } from "../utils/http";
 
 export interface UserDetails {
     email: string;
-    username: string;
+    name: string;
     avatar: string;
+    username: string;
 }
 
 export class AuthService {

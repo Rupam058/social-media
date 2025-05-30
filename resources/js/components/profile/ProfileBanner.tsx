@@ -29,7 +29,7 @@ function ProfileBanner({
         <div className="container">
             {filePickerOpen ? <FileInput onChange={onChangeBanner} /> : null}
             {self ? (
-                <button onClick={openFilePicker} className="container-child">
+                <button onClick={openFilePicker} className="container-child cursor-pointer">
                     <div className="mt-8 right-8 absolute bottom-8">
                         <FontAwesomeIcon icon={faPen} />
                     </div>
