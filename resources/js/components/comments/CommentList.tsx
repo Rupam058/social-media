@@ -2,7 +2,6 @@ import { CommentResponse } from "../../model/comment";
 import CommentCard from "./CommentCard";
 
 interface CommentsListProps {
-    postId: string;
     comments: CommentResponse[];
     loading?: boolean;
     error?: string | null;
@@ -11,7 +10,6 @@ interface CommentsListProps {
 }
 
 function CommentsList({
-    postId,
     comments,
     loading = false,
     error = null,

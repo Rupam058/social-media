@@ -7,7 +7,6 @@ import Modal from "../base/Modal";
 
 function UpdateUsername() {
     const [username, setUsername] = useState("");
-    const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
     const auth = useContext(authContext);
@@ -30,36 +29,34 @@ function UpdateUsername() {
     }, [auth.authenticatedUser]);
 
     async function changeUsername() {
-        setMessage("");
         setError("");
 
-        if (!username.trim()) {
-            setError("Username cannot be empty");
-            return;
-        }
+        // if (!username.trim()) {
+        //     setError("Username cannot be empty");
+        //     return;
+        // }
 
         try {
             const success = await userService.updateUsername(username);
             if (success) {
-                setMessage("Username updated successfully");
-
                 setLocation("/login", {
                     state: "After changing the username, you need to log in again.",
                 });
             }
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
+        } catch (err: any) {
+            const errorData = JSON.parse(err.message);
+            if (errorData.error) {
+                setError(errorData.error);
             } else {
-                setError("Failed to update username");
+                setError(err.message);
             }
         }
+        closeConfirmation();
     }
 
     return (
         <div className="md:w-1/2 w-full mt-8">
             <h2 className="my-6 text-2xl font-bold">Update Username</h2>
-            {message && <p className="text-green-600">{message}</p>}
             {error && <p className="text-red-600">{error}</p>}
             <div className="mt-4">
                 <input

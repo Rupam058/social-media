@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { Post, PostResponse } from "../../model/post";
+import { PostResponse } from "../../model/post";
 import Avatar from "../base/Avatar";
 import { authContext } from "../../context/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { Like } from "../../model/like";
-import { Comment, CommentResponse } from "../../model/comment";
+import { CommentResponse } from "../../model/comment";
 import CommentSection from "../comments/CommentSection";
 import Button from "../base/Button";
 import { Link } from "wouter";
@@ -16,6 +16,7 @@ import {
     likeService,
     postService,
 } from "../../bootstarp";
+import PostModal from "./PostModal";
 
 function PostCard({
     post,
@@ -31,6 +32,7 @@ function PostCard({
     const [commentSection, setCommentSection] = useState(false);
     const [comments, setComments] = useState<CommentResponse[]>([]);
     const [commentCount, setCommentCount] = useState(post.comments);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const auth = useContext(authContext);
 
@@ -90,70 +92,112 @@ function PostCard({
         setCommentCount(comments.length);
     }
 
+    async function openModal() {
+        if (comments.length === 0) {
+            let fetchedComments = await postService.getPostComments(
+                post.post.id,
+            );
+            setComments(fetchedComments);
+            setCommentCount(fetchedComments.length);
+        }
+        setModalOpen(true);
+    }
+
+    function handleCardClick(e: React.MouseEvent) {
+        // Don't open modal if clicking on buttons or links
+        if (
+            !(e.target as HTMLElement).closest("button") &&
+            !(e.target as HTMLElement).closest("a")
+        ) {
+            openModal();
+        }
+    }
+
     return (
-        <div className="bg-white p-2 border rounded-md">
-            <div className="flex items-center gap-4">
-                <Avatar image={imageUrl} />
-                <div>
-                    <p className="text-xl">{post.author.name}</p>
-                    <Link
-                        className="text-sm text-blue-700"
-                        to={`/profile/${post.author.username}`}
-                    >
-                        @{post.author.username}
-                    </Link>
-                </div>
-            </div>
-            {post.post.image != null ? (
-                <img
-                    className="h-52 object-cover w-full mt-2"
-                    src={`${APP_BASE_URL}/storage/uploads/${post.post.image}`}
-                ></img>
-            ) : null}
-
-            <p className="mt-2">{post.post.caption}</p>
-
-            {auth.authenticatedUser != null ? (
-                <>
-                    <div className="flex gap-2 items-center mt-4">
-                        <Button
-                            onClick={toggleCommentSection}
-                            size="small"
-                            bold={false}
-                            color="white"
+        <>
+            <div
+                className="bg-white p-2 border rounded-md cursor-pointer hover:shadow-md transition-shadow"
+                onClick={handleCardClick}
+            >
+                <div className="flex items-center gap-4">
+                    <Avatar image={imageUrl} />
+                    <div>
+                        <p className="text-xl">{post.author.name}</p>
+                        <Link
+                            className="text-sm text-blue-700"
+                            to={`/profile/${post.author.username}`}
                         >
-                            <FontAwesomeIcon
-                                icon={faComment}
-                                className="text-blue-400"
-                            />
-                            Comment ({commentCount.toLocaleString()})
-                        </Button>
-
-                        <Button
-                            onClick={like}
-                            size="small"
-                            bold={false}
-                            color={post.liked != null ? "blue" : "white"}
-                        >
-                            <FontAwesomeIcon
-                                icon={faThumbsUp}
-                                className={
-                                    post.liked ? "text-white" : "text-blue-400"
-                                }
-                            />
-                            Like ({post.likes})
-                        </Button>
+                            @{post.author.username}
+                        </Link>
                     </div>
-                </>
-            ) : null}
+                </div>
+                {post.post.image != null ? (
+                    <img
+                        className="h-52 object-cover w-full mt-2"
+                        src={`${APP_BASE_URL}/storage/uploads/${post.post.image}`}
+                        alt="Post image"
+                    ></img>
+                ) : null}
 
-            {commentSection ? (
-                <CommentSection
-                    comments={comments}
-                    createComment={createComment}
-                />
-            ) : null}
-        </div>
+                <p className="mt-2">{post.post.caption}</p>
+
+                {auth.authenticatedUser != null ? (
+                    <>
+                        <div className="flex gap-2 items-center mt-4">
+                            <Button
+                                onClick={toggleCommentSection}
+                                size="small"
+                                bold={false}
+                                color="white"
+                            >
+                                <FontAwesomeIcon
+                                    icon={faComment}
+                                    className="text-blue-400"
+                                />
+                                Comment ({commentCount.toLocaleString()})
+                            </Button>
+
+                            <Button
+                                onClick={like}
+                                size="small"
+                                bold={false}
+                                color={post.liked != null ? "blue" : "white"}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faThumbsUp}
+                                    className={
+                                        post.liked
+                                            ? "text-white"
+                                            : "text-blue-400"
+                                    }
+                                />
+                                Like ({post.likes})
+                            </Button>
+                        </div>
+                    </>
+                ) : null}
+
+                {commentSection ? (
+                    <CommentSection
+                        comments={comments}
+                        createComment={createComment}
+                        onCommentDelete={undefined}
+                        onCommentUpdate={undefined}
+                    />
+                ) : null}
+            </div>
+
+            <PostModal
+                post={post}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onLike={onLike}
+                onUnlike={onUnlike}
+                onComment={onComment}
+                comments={comments}
+                setComments={setComments}
+            />
+        </>
     );
 }
 

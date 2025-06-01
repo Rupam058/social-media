@@ -116,7 +116,7 @@ function Profile() {
 
                 {!isSelf() && auth.authenticatedUser != null ? (
                     <Button onClick={toggleFollow}>
-                        {followId != null ? "Unfollow" : "Follow"}
+                        {followId == null ? "Follow" : "Unfollow"}
                     </Button>
                 ) : (
                     <div className="flex gap-2 mt-5 md:mt-0">

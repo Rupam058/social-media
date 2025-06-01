@@ -33,7 +33,7 @@ function CommentSection({
     }
 
     return (
-        <div className="p-4">
+        <div className="p-4 md:p-6">
             {auth.authenticatedUser != null ? (
                 <div className="flex items-center gap-4">
                     <Avatar image={imageUrl} customClass="w-10 h-10" />
@@ -48,14 +48,16 @@ function CommentSection({
                         className="bg-blue-500 p-3 text-white rounded-md hover:bg-blue-600"
                         onClick={create}
                     >
-                        <FontAwesomeIcon icon={faPaperPlane} />
+                        <FontAwesomeIcon
+                            className="cursor-pointer"
+                            icon={faPaperPlane}
+                        />
                     </button>
                 </div>
             ) : null}
 
-            <div className="mt-4">
+            <div className="mt-6">
                 <CommentsList
-                    postId="" // This is not used since we're passing comments directly
                     comments={comments}
                     onCommentDelete={onCommentDelete}
                     onCommentUpdate={onCommentUpdate}

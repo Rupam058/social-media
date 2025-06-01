@@ -69,7 +69,8 @@ function CommentCard({ comment, onDelete, onUpdate }: CommentCardProps) {
     const auth = useContext(authContext);
 
     // Check if the current user is the author of the comment
-    const isAuthor = auth.authenticatedUser?.name === comment.author.username;
+    const isAuthor =
+        auth.authenticatedUser?.username === comment.author.username;
 
     async function updateComment() {
         if (!isAuthor) return;
@@ -145,7 +146,10 @@ function CommentCard({ comment, onDelete, onUpdate }: CommentCardProps) {
                 <div className="flex-1">
                     <Link to={`profile/${comment.author.username}`}>
                         <b className="text-sm">
-                            {comment.author.name} (@{comment.author.username})
+                            {comment.author.name}{" "}
+                            <span className="text-blue-600">
+                                (@{comment.author.username})
+                            </span>
                         </b>
                     </Link>
 

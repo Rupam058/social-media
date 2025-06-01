@@ -15,13 +15,23 @@ export class UserService {
     }
 
     async updateUsername(username: string) {
-        const response = await this.httpClient.post("username", {
-            body: username,
-        });
+        try {
+            const response = await this.httpClient.post("username", {
+                body: username,
+            });
 
-        if (response.ok) {
-            return true;
-        } else {
+            return response.ok;
+        } catch (error: any) {
+            // Ky throws an error for non-2xx responses
+            if (error.response) {
+                // First try to get the response as text
+                const responseText = await error.response.text();
+                if (responseText) {
+                    throw new Error(responseText);
+                }
+            }
+
+            // If we couldn't extract a specific error message, use a generic one
             throw new Error("Failed to update username");
         }
     }
