@@ -77,7 +77,7 @@ class UserController extends Controller {
 
         // Delete previous banner if it exists
         if ($user && $user->avatar) {
-            Storage::disk('public')->delete('banners/' . $user->banner);
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
         }
 
         $image = $req->file("image");
@@ -133,7 +133,7 @@ class UserController extends Controller {
         $hash = $image->hashName();
         $this->userService->setUserBanner(user: Auth::id(), banner: $hash);
 
-        return response()->json(["message" => "Banner Set"], status: 201);
+        return response($hash);
     }
 
     public function login(Request $req) {

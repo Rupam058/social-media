@@ -8,18 +8,6 @@ import Button from "../base/Button";
 function Navbar() {
     const auth = useContext(authContext);
     const [_, setLocation] = useLocation();
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        // Set loading to false once auth state is determined
-        setIsLoading(auth.authenticatedUser === undefined);
-
-        // Debug the auth state
-        console.log("Auth state in Navbar:", auth);
-        if (auth.authenticatedUser) {
-            console.log("User avatar:", auth.authenticatedUser.avatar);
-        }
-    }, [auth.authenticatedUser]);
 
     // Construct image URL only if user is authenticated
     const imageUrl = auth.authenticatedUser?.avatar

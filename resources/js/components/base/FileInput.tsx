@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 function FileInput({
     onChange,
-    mimeType = "image/png, image/jpeg image/jpg image/gif, image/webp",
+    mimeType = "image/png, image/jpeg, image/jpg, image/gif, image/webp",
 }: {
     onChange: (f: File | null) => void;
     mimeType?: string;

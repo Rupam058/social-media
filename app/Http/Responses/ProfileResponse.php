@@ -16,7 +16,7 @@ class ProfileResponse {
         string $name,
         string|null $avatar,
         string|null $description,
-        string|null $banner = null
+        string|null $banner
     ) {
         $this->id = $id;
         $this->username = $username;
