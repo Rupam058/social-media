@@ -62,16 +62,12 @@ class UserService {
     }
 
     public function resetPassword(string $userId, string $password) {
-        $user = $this->getUserById(($userId));
+        $user = $this->getUserById($userId);
         if ($user == null)
             return;
 
         $user->password = Hash::make($password);
         $user->save();
-
-        return response('Password reset successfully, you can now log In')->json([
-            'message' => 'Password reset successfully'
-        ]);
     }
 
     public function setPassword(string $userId, string $previous, string $new): bool {

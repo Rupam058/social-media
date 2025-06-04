@@ -26,10 +26,16 @@ Route::prefix('/auth')->group(function () {
 
 
     Route::post("/initReset", [UserController::class, 'initResetPassword']);
-    Route::get("reset", [UserController::class, 'resetPasswordView'])->name('resetPasswordView');
-    Route::post("reset", [UserController::class, 'resetPassword']);
+    Route::get("/reset/{token}", [UserController::class, 'resetPasswordView'])
+        ->name('resetPasswordView')
+        ->middleware('signed');
 
-    Route::get("/confirm", [UserController::class, 'confirmEmail'])->name('confirmEmail');
+    Route::post("/reset/{token}", [UserController::class, 'resetPassword'])
+        ->middleware('signed');
+
+    Route::get("/confirm/{token}", [UserController::class, 'confirmEmail'])
+        ->name('confirmEmail')
+        ->middleware('signed');
 
     // First Redirect the user to google for authentication
     Route::get("/redirect/google", [GoogleAuthController::class, 'redirect']);

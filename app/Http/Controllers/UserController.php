@@ -24,16 +24,16 @@ class UserController extends Controller {
         return response()->json(["message" => "User created"], status: 201);
     }
 
-    public function confirmEmail(Request $req) {
-        if (!$req->hasValidSignature()) {
-            abort(401);
-        }
+    public function confirmEmail(Request $req, Request $token) {
+        // if (!$req->hasValidSignature()) {
+        //     abort(401);
+        // }
 
-        $validated = $req->validate([
-            "token" => "required"
-        ]);
+        // $validated = $req->validate([
+        //     "token" => "required"
+        // ]);
 
-        $userId = $validated["token"];
+        $userId = $token;
         $this->userService->confirmEmail($userId);
         return response("Successfully confirmed Email, thank You!");
     }
@@ -194,33 +194,34 @@ class UserController extends Controller {
         ]);
     }
 
-    public function resetPassword(Request $req) {
-        if (!$req->hasValidSignature()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid or expired password reset link.'
-            ], 401);
-        }
+    public function resetPasswordView(Request $token) {
+        // if (!$request->hasValidSignature()) {
+        //     abort(401);
+        // }
+
+        // $tokenIs = $request->query($token);
+        return view('reset_password', ['token' => $token]);
+    }
+
+    public function resetPassword(Request $req, $token) {
+        // if (!$req->hasValidSignature()) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Invalid or expired password reset link.'
+        //     ], 401);
+        // }
 
         $validated = $req->validate([
-            "token" => "required",
+            // "token" => "required",
             "password" => "required"
         ]);
 
-        $userId = $req->query("token");
+        $userId = $token;
         $this->userService->resetPassword($userId, $validated["password"]);
 
         return response("Successfully reset password, you can now log in.");
     }
 
-    public function resetPasswordView(Request $request) {
-        if (!$request->hasValidSignature()) {
-            abort(401);
-        }
-
-        $token = $request->query('token');
-        return view('reset_password', ['token' => $token]);
-    }
 
     public function setPassword(Request $req) {
         $validated = $req->validate([
