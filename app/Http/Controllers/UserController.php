@@ -217,7 +217,9 @@ class UserController extends Controller {
         ]);
 
         $userId = $token;
-        $this->userService->resetPassword($userId, $validated["password"]);
+        if (!$this->userService->resetPassword($userId, $validated["password"])) {
+            return response()->json(["error" => "Password Reset failed, try again..."], status: 401);
+        }
 
         return response("Successfully reset password, you can now log in.");
     }

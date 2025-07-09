@@ -61,13 +61,18 @@ class UserService {
         ));
     }
 
-    public function resetPassword(string $userId, string $password) {
+    public function resetPassword(string $userId, string $password): bool {
         $user = $this->getUserById($userId);
         if ($user == null)
-            return;
+            return false;
 
-        $user->password = Hash::make($password);
+        // $user->password = Hash::make($password);
+        // Update password using the same pattern as setPassword method
+        $user->update([
+            'password' => Hash::make($password)
+        ]);
         $user->save();
+        return true;
     }
 
     public function setPassword(string $userId, string $previous, string $new): bool {
@@ -77,7 +82,10 @@ class UserService {
         if (!Hash::check($previous, $user->getAuthPassword()))
             return false;
 
-        $user->password = Hash::make($new);
+        // $user->password = Hash::make($new);
+        $user->update([
+            'password' => Hash::make($new)
+        ]);
         $user->save();
         return true;
     }

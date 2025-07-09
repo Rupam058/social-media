@@ -12,6 +12,8 @@ export const commentService = new CommentService();
 export const userService = new UserService();
 export const followService = new FollowService();
 
-export const APP_BASE_URL = "http://localhost:8000";
+// export const APP_BASE_URL = "http://localhost:8000";
+// export const APP_BASE_URL = process.env.APP_BASE_URL;
+export const APP_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 export const DEFAULT_AVATAR = `${APP_BASE_URL}/defaults/default.jpg`;
 export const DEFAULT_BANNER = `${APP_BASE_URL}/defaults/banner.png`;

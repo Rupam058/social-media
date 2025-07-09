@@ -1,8 +1,10 @@
 import ky, { KyInstance, Options } from "ky";
+import { APP_BASE_URL } from "../bootstarp";
 
 export function http(prefix: string, options?: Options): KyInstance {
     return ky.extend({
-        prefixUrl: `http://localhost:8000${prefix}`,
+        // prefixUrl: `http://localhost:8000${prefix}`,
+        prefixUrl: `${import.meta.env.VITE_APP_BASE_URL}${prefix}`,
         credentials: "include",
         hooks: {
             beforeRequest: [
